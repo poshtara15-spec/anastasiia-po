@@ -6,7 +6,7 @@ export const LINKS = {
   linkedin: "https://www.linkedin.com/in/anastasiia-aleksiichuk-09a139225/",
   behance: "https://www.behance.net/8f1a613f",
   recommendations: "https://www.linkedin.com/in/anastasiia-aleksiichuk-09a139225/details/recommendations/?detailScreenTabIndex=0",
-  cv: "https://drive.google.com/file/d/1lB_7AaJrg_ReTTdmcuzaJe-cEg3v_JPu/view",
+  cv: "/Anastasiia_Aleksiichuk_Product_Owner_CV.pdf",
   /** The product-design portfolio, where the full design-side cases live. */
   designPortfolio: "https://anastasiiaaportfolio.vercel.app",
 };
