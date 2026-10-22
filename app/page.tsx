@@ -11,7 +11,7 @@ export default function Home() {
         {/* Hero */}
         <section className="hero wrap">
           <div className="hero-meta">
-            <span>{HERO.hello}</span>
+            <span>{HERO.hello} · {HERO.location}</span>
             <span className="dot">available for new projects</span>
           </div>
           <h1>Product Owner for <mark>B2B SaaS</mark> &amp; E‑commerce</h1>

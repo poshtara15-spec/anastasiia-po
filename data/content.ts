@@ -13,6 +13,7 @@ export const LINKS = {
 
 export const HERO = {
   hello: "Hello, I’m Anastasiia",
+  location: "Brussels, Belgium · Remote",
   title: "Product Owner for B2B SaaS & E-commerce",
   thesis: "I’m a Product Owner with a designer’s hands.",
   lede: "I set the roadmap and OKRs, prioritise the work — and turn ideas into working prototypes fast, so we test them before they’re built.",
@@ -99,7 +100,7 @@ export const JOURNEY: Job[] = [
     tags: ["0-to-1", "JTBD", "MVP scope", "Roadmap"],
   },
   {
-    dates: "Jul 2026 — Present", role: "Product Designer", org: "LLM API · Spendbase", meta: "B2B SaaS · Remote",
+    dates: "Jul 2026 — Sep 2026", role: "Product Designer", org: "LLM API · Spendbase", meta: "B2B SaaS · Remote",
     points: [
       "Redesigned onboarding around organisation setup — ×6.6 sign-up → payment in the first 24 hours.",
       "Measured the change with equal-window cohorts, and named the activation trade-off openly.",
