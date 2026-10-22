@@ -114,9 +114,7 @@ export const JOURNEY: Job[] = [
       "Owned the roadmap and set OKRs; prioritised the backlog with the PO and BA.",
       "Ran discovery: competitive analysis and interviews with workshops and suppliers.",
       "Turned sales-team feedback into features and backlog items.",
-      "Mapped every role’s workflows — buyer, supplier, admin — with User Story Mapping.",
-      "[Result or OKR you can share]",
-    ],
+      "Mapped every role’s workflows — buyer, supplier, admin — with User Story Mapping.",    ],
     tags: ["0-to-1", "Roadmap", "OKR", "Backlog", "Kanban"],
   },
   {
@@ -149,9 +147,7 @@ export const JOURNEY: Job[] = [
       "Used SPIN to uncover what doctors and pharmacists really needed — the same questions I now ask in customer interviews.",
       "Built the brand in the region — from first awareness to doctors and pharmacies choosing it.",
       "Worked with key opinion leaders (KOLs); organised events and presentations for top-level doctors, pharmacies and clinics.",
-      "Worked directly with clients and reported to top management.",
-      "[Plan vs actual, growth]",
-    ],
+      "Worked directly with clients and reported to top management.",    ],
     tags: ["SMART", "ABC segmentation", "SPIN", "KOL management", "Brand building"],
   },
 ];
