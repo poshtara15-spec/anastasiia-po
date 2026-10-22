@@ -1,0 +1,2966 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Onboarding Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Rethink+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground: #f4f6f8; --surface: #ffffff; --surface-2: #f8fafc;
+    --ink: #1c2024; --ink-2: #4a5160; --ink-3: #7d8593;
+    --line: #e4e8ee; --line-2: #c8cfdd;
+    --accent: #3d33ff; --accent-soft: #eeedff; --accent-ink: #2a22c4;
+    --jade: #1a7f52; --jade-soft: #f0faf4;
+    --red: #c5292e; --red-soft: #fdf3f3;
+    --amber: #a8620c; --amber-soft: #fdf5e9;
+    --code-bg: #14161c; --code-ink: #e6e8ee; --code-dim: #8b93a5;
+    --bubble-user-ink: #1c2024;
+    --frost: rgba(255,255,255,.6); --frost-line: #ffffff;
+    --composer: rgba(251,253,255,.4);
+    --g1: #f1f0ff; --g2: #e7f7ef;
+    --shadow: 0 1px 2px rgba(17,24,39,.05), 0 16px 40px -28px rgba(17,24,39,.35);
+    --lift: 0 1px 2px rgba(17,24,39,.04), 0 6px 16px -12px rgba(17,24,39,.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0d0f14; --surface: #161920; --surface-2: #1b1f27;
+      --ink: #e9ebef; --ink-2: #a8b0be; --ink-3: #787f8e;
+      --line: #262b34; --line-2: #343b47;
+      --accent: #9a93ff; --accent-soft: #1f1c3d; --accent-ink: #b6b0ff;
+      --jade: #4cc38a; --jade-soft: #102219;
+      --red: #f0797d; --red-soft: #291416;
+      --amber: #e0a43c; --amber-soft: #271d0e;
+      --code-bg: #0a0c10; --code-ink: #e6e8ee; --code-dim: #7c8497;
+      --bubble-user-ink: #e9ebef;
+      --frost: rgba(255,255,255,.06); --frost-line: rgba(255,255,255,.14);
+      --composer: rgba(20,23,30,.55);
+      --g1: #16152b; --g2: #102320;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 16px 40px -28px rgba(0,0,0,.9);
+      --lift: 0 1px 2px rgba(0,0,0,.4), 0 6px 16px -12px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0d0f14; --surface: #161920; --surface-2: #1b1f27;
+    --ink: #e9ebef; --ink-2: #a8b0be; --ink-3: #787f8e;
+    --line: #262b34; --line-2: #343b47;
+    --accent: #9a93ff; --accent-soft: #1f1c3d; --accent-ink: #b6b0ff;
+    --jade: #4cc38a; --jade-soft: #102219;
+    --red: #f0797d; --red-soft: #291416;
+    --amber: #e0a43c; --amber-soft: #271d0e;
+    --code-bg: #0a0c10; --code-ink: #e6e8ee; --code-dim: #7c8497;
+    --bubble-user-ink: #e9ebef;
+    --frost: rgba(255,255,255,.06); --frost-line: rgba(255,255,255,.14);
+    --composer: rgba(20,23,30,.55);
+    --g1: #16152b; --g2: #102320;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 16px 40px -28px rgba(0,0,0,.9);
+    --lift: 0 1px 2px rgba(0,0,0,.4), 0 6px 16px -12px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    background: var(--ground);
+    background-image: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+    background-attachment: fixed;
+    font-family: "Rethink Sans", system-ui, -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  /* ---------- hero: one decision, on brand ---------- */
+  /* Deliberately single-theme: this surface is the brand, indigo in both themes. */
+  .hero {
+    min-height: 100vh; display: grid; place-items: center;
+    background: #ffffff; position: relative; overflow: hidden; padding: 56px 20px;
+    transition: opacity .38s ease, transform .38s ease;
+  }
+
+  /* The brand gradient, pixelated into tiles. Each tile turns over on its own
+     beat; the delay follows the diagonal, so the turn reads as one wave
+     crossing the screen rather than 400 things twitching at once. */
+  .cells {
+    position: absolute; inset: 0; display: grid; gap: 4px;
+    perspective: 1100px; pointer-events: none;
+  }
+  .cell {
+    position: relative; border-radius: 12px; background: var(--c1);
+    animation: turn 15s cubic-bezier(.62,.04,.3,1) infinite;
+    animation-delay: var(--dl);
+  }
+  .cell.still { animation: none; }
+  .cell i {
+    position: absolute; right: -3px; top: -3px; width: 7px; height: 7px;
+    transform: rotate(45deg); border-radius: 1px;
+  }
+  @keyframes turn {
+    0%, 38%     { transform: rotateX(0deg);    background: var(--c1); }
+    44%         { transform: rotateX(-90deg);  background: var(--c1); }
+    44.01%      { background: var(--c2); }
+    50%, 88%    { transform: rotateX(-180deg); background: var(--c2); }
+    94%         { transform: rotateX(-270deg); background: var(--c2); }
+    94.01%      { background: var(--c1); }
+    100%        { transform: rotateX(-360deg); background: var(--c1); }
+  }
+
+  .hero.out { opacity: 0; transform: scale(.985); pointer-events: none; }
+
+  .hero-in {
+    position: relative; z-index: 1; width: 100%; max-width: 940px;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    text-align: center;
+  }
+
+  .brandpill {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: #1c2024; font-weight: 600; font-size: 15px; letter-spacing: -.01em;
+  }
+  .brandmark { width: 22px; height: 22px; display: block; line-height: 0; }
+  .brandmark svg { display: block; width: 100%; height: 100%; border-radius: 5px; }
+
+  .hero h1 {
+    margin: 22px 0 0; color: #0b1322; font-weight: 600; letter-spacing: -.035em;
+    font-size: clamp(34px, 5.6vw, 54px); line-height: 1.06; text-wrap: balance;
+  }
+  /* the sub carries the same ink as the headline in this design, not a grey */
+  .hero-sub {
+    margin: 14px 0 0; color: #0b1322; font-size: 16.5px;
+    max-width: 54ch; text-wrap: balance;
+  }
+
+  .picks {
+    margin-top: 34px; width: 100%; max-width: 640px; margin-inline: auto;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+  }
+  @media (max-width: 700px) { .picks { grid-template-columns: 1fr; } }
+
+  /* White in both states; selection is the gradient stroke, not a fill. The
+     Figma shadow is 0 2px 12px -18px \u2014 at that spread it renders as nothing
+     in CSS (spread pulls the shadow in further than the blur pushes it back
+     out), so the spread is opened up to -6px here to keep it visible. */
+  .pick {
+    font: inherit; text-align: left; cursor: pointer;
+    border: 1px solid transparent; border-radius: 12px; padding: 16px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(97deg, transparent, transparent) border-box;
+    display: flex; flex-direction: column; gap: 6px; position: relative;
+    box-shadow: 0 2px 12px -6px rgba(23,18,79,.12);
+    transition: box-shadow .16s ease, transform .16s ease, background .16s ease;
+  }
+  .pick:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px -8px rgba(23,18,79,.2);
+  }
+
+  /* Selection is carried by the mark, the tint and a deeper lift — never by a
+     border, so it still reads without colour. */
+  .pick[aria-checked="true"] {
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(97deg, #a7ccfc 0%, #f9cceb 100%) border-box;
+    box-shadow: 0 6px 20px -8px rgba(23,18,79,.18);
+  }
+  /* RadioGroupItem from the design system, to the pixel: a 16px circle with a
+     1px primary border, and a 10px filled primary dot as the indicator. */
+  /* RadioGroupItem as the DS builds it: h-4 w-4, 1px primary border, and the
+     indicator is lucide's Circle at h-2.5 w-2.5 with fill-current — an icon,
+     not a CSS disc, so the edge matches the product exactly. */
+  .pick .radio {
+    position: absolute; top: 16px; right: 16px;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid #3514ed; background: transparent;
+    display: grid; place-items: center; color: #3514ed;
+  }
+  .pick .radio svg {
+    width: 10px; height: 10px; display: block;
+    opacity: 0; transform: scale(.3);
+    transition: opacity .14s ease, transform .18s cubic-bezier(.2,.7,.3,1);
+  }
+  .pick[aria-checked="true"] .radio svg { opacity: 1; transform: none; }
+  .pick:focus-visible { outline: 2px solid #3514ed; outline-offset: 3px; }
+  .pick-ico { display: none; }
+  .pick-t {
+    font-size: 15.5px; font-weight: 600; color: #0b1322; letter-spacing: -.015em;
+    padding-right: 26px;
+  }
+  .pick-d { font-size: 13px; color: #4a5160; line-height: 1.5; }
+
+  .cta {
+    margin-top: 17px; width: 100%; max-width: 644px; height: 46px;
+    font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+    padding: 0 14px; border-radius: 8px; border: 0; background: #3514ed; color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+  }
+  .cta:disabled { opacity: .35; cursor: default; }
+  .cta:hover:not(:disabled) { background: #2b10c9; }
+  .cta span { transition: transform .16s ease; }
+  .cta:hover:not(:disabled) span { transform: translateX(3px); }
+
+  .askline {
+    margin-top: 14px; font: inherit; font-size: 13px; cursor: pointer;
+    background: none; border: 0; color: #8a90a2; padding: 0 0 1px;
+    border-bottom: 1px solid transparent;
+  }
+  .askline:hover { color: #4a5160; border-bottom-color: #c8cfdd; }
+
+  .hero-ask { margin-top: 14px; width: 100%; max-width: 640px; display: flex; gap: 8px; }
+  .hero-ask[hidden] { display: none; }
+  .hero-ask input {
+    flex: 1; font: inherit; font-size: 14.5px; color: #10121a;
+    background: #fff; border: 1px solid #dfe3ec; border-radius: 9px; padding: 12px 15px;
+  }
+  .hero-ask input::placeholder { color: #9aa0b0; }
+  .hero-ask input:focus { outline: none; border-color: #3d33ff; }
+  .hero-ask button {
+    font: inherit; font-size: 17px; line-height: 1; cursor: pointer; flex: none;
+    width: 46px; border-radius: 9px; border: 0; background: #3d33ff; color: #fff; font-weight: 600;
+  }
+  .hero-ask button:disabled { opacity: .35; cursor: default; }
+  .hero-ask.busy input { opacity: .6; }
+
+  .hero-skip {
+    margin-top: 20px; font: inherit; font-size: 13.5px; cursor: pointer;
+    background: none; border: 0; color: #5e6573;
+    border-bottom: 1px solid transparent; padding: 0 0 1px;
+  }
+  .hero-skip:hover { color: #0b1322; border-bottom-color: #c8cfdd; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero, .pick { transition: none; }
+    .cell { animation: none; }
+  }
+
+
+  /* ---------- claim dialog, mirroring the app's own ClaimFreeCreditsDialog ---------- */
+  .ovl {
+    position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px;
+    background: rgba(17,19,28,.55); backdrop-filter: blur(3px);
+    animation: fade .18s ease;
+  }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .dlg {
+    width: 96vw; max-width: 860px; border-radius: 20px; overflow: hidden;
+    display: grid; grid-template-columns: 1fr 1fr;
+    box-shadow: 0 30px 80px -30px rgba(10,10,30,.7);
+    animation: pop .2s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: none; } }
+  @media (max-width: 760px) { .dlg { grid-template-columns: 1fr; max-height: 90vh; overflow-y: auto; } }
+
+  /* left — value. Fixed light gradient, exactly as the app ships it. */
+  .dlg-l {
+    background: linear-gradient(180deg, #F1F0FF 0%, #E7F7EF 100%);
+    padding: 28px; display: flex; flex-direction: column; color: #1c2024;
+  }
+  .dlg-eyebrow { display: inline-flex; align-items: center; gap: 6px; color: #3d33ff; font-size: 14px; font-weight: 600; }
+  .dlg-l h2 { margin: 12px 0 0; font-size: 24px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+  .dlg-l h2 b { color: #3d33ff; font-weight: 800; }
+  .dlg-l .lede { margin: 8px 0 0; font-size: 14px; color: #4a5160; line-height: 1.6; }
+  .dlg-l ul { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .dlg-l li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; }
+  .dlg-l li svg { flex: none; margin-top: 2px; }
+  .dlg-l li b { font-weight: 600; }
+  .dlg-l .cap {
+    margin-top: 20px; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: #6b7280;
+  }
+  .brandrow { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .brandtile {
+    width: 32px; height: 32px; border-radius: 8px; background: #fff; border: 1px solid #e4e8ee;
+    display: grid; place-items: center; font-size: 12px; font-weight: 600; color: #1c2024;
+  }
+  .dlg-l .unlock { margin: 8px 0 0; font-size: 13px; color: #4a5160; }
+  .trust { margin-top: auto; padding-top: 24px; display: flex; align-items: center; gap: 10px; }
+  .faces { display: flex; }
+  .faces span {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; margin-left: -8px;
+    display: grid; place-items: center; font-size: 10px; font-weight: 600; color: #fff;
+  }
+  .faces span:first-child { margin-left: 0; }
+  .stars { display: flex; gap: 1px; }
+  .trust .who { font-size: 12px; font-weight: 600; }
+
+  /* right — verification */
+  .dlg-r { background: var(--surface); padding: 28px; display: flex; flex-direction: column; }
+  .dlg-r h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .safebox {
+    margin-top: 16px; display: flex; align-items: flex-start; gap: 10px;
+    border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 14px;
+  }
+  .safebox p { margin: 0; font-size: 13px; line-height: 1.6; color: var(--ink-3); }
+  .safebox b { color: var(--ink); font-weight: 600; }
+  .cardfield {
+    margin-top: 16px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .cardfield label { font-size: 12.5px; color: var(--ink-3); }
+  .cardfield .fake {
+    border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 13px;
+    background: var(--surface-2); color: var(--ink-3); font-size: 14px;
+    display: flex; justify-content: space-between; gap: 10px;
+  }
+  .cardfield .note { font-size: 11.5px; color: var(--ink-3); }
+  .claimbtn {
+    margin-top: 20px; width: 100%; font: inherit; font-size: 15px; font-weight: 600;
+    padding: 14px; border-radius: 11px; border: 0; background: var(--accent); color: #fff; cursor: pointer;
+  }
+  .claimbtn:disabled { opacity: .6; cursor: default; }
+  .dlg-foot {
+    margin-top: 12px; text-align: center; font-size: 12px; color: var(--ink-3);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .dlg-x {
+    position: absolute; top: 14px; right: 16px; font: inherit; font-size: 20px; line-height: 1;
+    background: none; border: 0; color: rgba(255,255,255,.8); cursor: pointer;
+  }
+  .dlg-x:hover { color: #fff; }
+
+  .app { background: var(--surface); display: grid; grid-template-rows: 1fr; height: 100vh; }
+
+  .after { max-width: 1140px; margin: 0 auto; padding: 30px 20px 48px; }
+
+  .bar {
+    grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 20px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 14px; letter-spacing: -.01em; }
+  .dot { width: 9px; height: 9px; border-radius: 3px; background: var(--accent); }
+  .escape {
+    font: inherit; font-size: 13px; color: var(--ink-3); cursor: pointer;
+    background: none; border: 0; border-bottom: 1px solid transparent; padding: 0;
+  }
+  .escape:hover { color: var(--ink-2); border-bottom-color: var(--line-2); }
+
+  .chat {
+    display: flex; flex-direction: column; min-width: 0; min-height: 0;
+    background-image: linear-gradient(150deg, var(--g1) 0%, var(--g2) 100%);
+  }
+  /* the conversation keeps a readable measure however wide the window gets */
+  /* The transcript sits at the bottom and older turns ride upward as new ones
+     arrive. margin-top:auto on the inner block rather than justify-content:
+     flex-end on the scroller — that one clips the top once it overflows. */
+  .stream {
+    flex: 1; min-height: 0; overflow-y: auto; padding: 30px 28px 10px;
+    display: flex; flex-direction: column;
+    width: 100%; max-width: 900px; margin-inline: auto;
+  }
+  .streamin { margin-top: auto; display: flex; flex-direction: column; gap: 15px; }
+  .composer > * { width: 100%; max-width: 844px; margin-inline: auto; }
+  .row { display: flex; gap: 11px; align-items: flex-start; animation: slidein .32s cubic-bezier(.2,.7,.3,1); }
+  .row.me { justify-content: flex-end; }
+  @keyframes slidein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .av {
+    width: 28px; height: 28px; border-radius: 8px; flex: none;
+    margin-top: 1px; overflow: hidden; line-height: 0;
+    transform-origin: 50% 82%;
+    box-shadow: 0 1px 3px rgba(17,24,39,.22);
+  }
+  .av svg { display: block; width: 100%; height: 100%; }
+  .av.you {
+    background: var(--accent); color: #fff; border-radius: 8px;
+    display: grid; place-items: center; line-height: 1;
+    font-size: 10.5px; font-weight: 600; letter-spacing: .01em;
+    box-shadow: none;
+  }
+  /* the mark tips from side to side while the answer is being written */
+  @keyframes tumble {
+    0%   { transform: rotate(0deg) translateY(0); }
+    25%  { transform: rotate(-10deg) translateY(-1.5px); }
+    50%  { transform: rotate(0deg) translateY(0); }
+    75%  { transform: rotate(10deg) translateY(-1.5px); }
+    100% { transform: rotate(0deg) translateY(0); }
+  }
+  .av.typing { animation: tumble 2s ease-in-out infinite; }
+
+  /* No plates: a message is text on the gradient, with the mark standing in
+     for the speaker. Anything with its own surface — a card, a model row, the
+     credentials — brings it along. */
+  .bubble {
+    background: none; border: 0; border-radius: 0;
+    padding: 2px 0 0; max-width: 78%; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+    font-size: 16px; line-height: 24px;
+  }
+  .bubble > * { transition: opacity .32s ease, transform .32s ease; }
+  .bubble > .rise { opacity: 0; transform: translateY(7px); }
+
+  /* Terminal-style printing: the whole line is laid out from the start and
+     stays put — only the block cursor advances across it, so nothing reflows
+     and no word ever jumps to another line mid-print. */
+  .tw-rest { visibility: hidden; }
+  /* the block cursor sits on the gradient now, so the character under it is
+     hidden rather than painted in a plate colour */
+  .tw-cur { background: var(--accent); color: transparent; border-radius: 1px; }
+
+  .dots { display: inline-flex; gap: 4px; align-items: center; height: 18px; }
+  .dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); animation: bob 1.1s ease-in-out infinite; }
+  .dots i:nth-child(2) { animation-delay: .15s; }
+  .dots i:nth-child(3) { animation-delay: .3s; }
+  @keyframes bob { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chip { animation: none; opacity: 1; transform: none; }
+    .row { animation: none; }
+    .av.typing { animation: none; }
+    .dots i { animation: none; opacity: .5; }
+  }
+  .row.me .bubble {
+    color: var(--bubble-user-ink); max-width: 72%; text-align: right;
+  }
+  .bubble p { margin: 0; }
+  .closingline { margin: 0; color: var(--ink); }
+  .bubble .ask { color: var(--ink); }
+  .bubble .sub { font-size: 16px; line-height: 24px; color: var(--ink); }
+
+  .receipt {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10.5px; color: var(--ink-3); display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
+  }
+  .receipt .pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--jade); }
+
+  .card {
+    border: 1px solid var(--line); background: var(--surface-2);
+    border-radius: 8px; padding: 11px 13px; display: flex; flex-direction: column; gap: 5px;
+  }
+  .card .t { font-size: 14px; line-height: 21px; font-weight: 600; color: var(--ink); }
+  .card .d { font-size: 14px; line-height: 21px; color: var(--ink-2); }
+  .card.jade { background: var(--jade-soft); border-color: color-mix(in srgb, var(--jade) 28%, transparent); }
+  .card.jade .t { color: var(--jade); }
+  .card.amber { background: var(--amber-soft); border-color: color-mix(in srgb, var(--amber) 30%, transparent); }
+  .card.amber .t { color: var(--amber); }
+  .card.red { background: var(--red-soft); border-color: color-mix(in srgb, var(--red) 30%, transparent); }
+  .card.red .t { color: var(--red); }
+
+  /* model picker — wide rows, composed left to right: what the $10 buys, what
+     it is, what it costs. The number stays the first thing read. */
+  .models { display: flex; flex-direction: row; flex-wrap: wrap; gap: 9px; }
+  .models .mcard { flex: 1 1 220px; min-width: 0; }
+
+  .mcard {
+    font: inherit; text-align: left; cursor: pointer;
+    border: 1px solid var(--frost-line); background: var(--frost);
+    border-radius: 12px; padding: 14px 16px;
+    display: grid; grid-template-columns: 28px minmax(0, 1fr) 16px;
+    align-items: center; gap: 14px;
+    transition: border-color .14s ease, background .14s ease, box-shadow .14s ease;
+  }
+  .mcard:hover { box-shadow: 0 8px 22px -16px rgba(23,18,79,.3); }
+  .mcard[aria-pressed="true"] {
+    border-color: var(--accent); background: var(--accent-soft);
+    box-shadow: 0 10px 26px -16px rgba(61,51,255,.4);
+  }
+  .mcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* the vendor mark sits on its own tile so marks of different weights —
+     a wordmark, a glyph, a filled square — read as one set */
+  .mcard .brand {
+    width: 28px; height: 28px; border-radius: 6px; flex: none;
+    display: grid; place-items: center; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-2);
+    overflow: hidden;
+  }
+  .mcard .brand svg { width: 17px; height: 17px; display: block; }
+  .mcard .brand:empty { display: none; }
+
+  .mcard .nm {
+    font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -.01em;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  /* jade, not the indigo accent: the accent already means "selected" on this
+     card, and a badge that borrows it reads as a state rather than a fact */
+  .mcard .tag {
+    font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 5px; font-weight: 600; flex: none;
+    background: var(--jade-soft); color: var(--jade);
+  }
+
+
+  .mcard .radio {
+    width: 16px; height: 16px; border-radius: 50%; justify-self: end;
+    border: 1px solid #c8cfdd; display: grid; place-items: center; color: var(--accent);
+    transition: border-color .14s ease;
+  }
+  .mcard[aria-pressed="true"] .radio { border-color: var(--accent); }
+  .mcard .radio svg {
+    width: 10px; height: 10px; display: block; opacity: 0; transform: scale(.3);
+    transition: opacity .12s ease, transform .16s cubic-bezier(.2,.7,.3,1);
+  }
+  .mcard[aria-pressed="true"] .radio svg { opacity: 1; transform: none; }
+
+  .bubble .fine { font-size: 12.5px; line-height: 19px; color: var(--ink-3); }
+  .more {
+    font: inherit; font-size: 13px; align-self: flex-start; cursor: pointer;
+    padding: 7px 12px; border-radius: 8px;
+    border: 1px solid var(--frost-line); background: var(--frost); color: var(--ink-2);
+  }
+  .more:hover { color: var(--ink); border-color: var(--line-2); }
+  .sdlg-body .more { margin-top: 18px; }
+
+  /* credentials */
+  .creds { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .cred {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1px solid var(--line-2);
+    border-radius: 8px; padding: 8px 9px 8px 13px; min-width: 0;
+  }
+  .cred .lbl {
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10px;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+    width: 72px; flex: none;
+  }
+  .cred .val {
+    flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap;
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12.5px; color: var(--ink);
+    scrollbar-width: thin;
+  }
+  .cred .val.secret { color: var(--ink); }
+  .cp {
+    font: inherit; font-size: 11.5px; flex: none; cursor: pointer;
+    padding: 5px 11px; border-radius: 6px;
+    border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink-2);
+  }
+  .cp:hover { background: var(--surface); color: var(--accent-ink); border-color: var(--accent); }
+  .cp.ok { color: var(--jade); border-color: color-mix(in srgb, var(--jade) 45%, transparent); background: var(--jade-soft); }
+  .cp.go { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+  .cp.go:hover { background: var(--accent-ink); border-color: var(--accent-ink); color: #fff; }
+  .cp.go:disabled { opacity: .4; cursor: default; }
+
+  .cred .val.prose {
+    font-family: inherit; font-size: 14px; color: var(--ink-2);
+    white-space: normal; overflow: visible;
+  }
+
+  .linkbtn {
+    font: inherit; font-size: 15px; font-weight: 500; cursor: pointer;
+    background: none; border: 0; padding: 0; margin-left: 39px;
+    color: var(--accent); border-bottom: 1px solid transparent;
+  }
+  .linkbtn:hover { border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+  .linkbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .linkrow { margin-left: 39px; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .linkrow .linkbtn { margin-left: 0; }
+
+  .dlg.one, .dlg.wide { grid-template-columns: 1fr; background: var(--surface); }
+  .dlg.one { max-width: 460px; }
+  .dlg.wide { max-width: 640px; max-height: 88vh; overflow-y: auto; }
+
+  .sdlg-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+  .sdlg-row .sdlg-lab { margin-top: 0; }
+  .tabs { display: flex; gap: 4px; }
+  .tab {
+    font: inherit; font-size: 12.5px; cursor: pointer; padding: 4px 10px; border-radius: 7px;
+    border: 1px solid var(--line-2); background: var(--surface); color: var(--ink-2);
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-pressed="true"] {
+    background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); font-weight: 500;
+  }
+  .sdlg-body .prompttext { margin-top: 8px; }
+  .sdlg-body .cp { align-self: flex-start; margin-top: 8px; }
+  .sdlg-head { padding: 22px 24px 0; display: flex; flex-direction: column; gap: 5px; }
+  .sdlg-head b { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -.015em; }
+  .sdlg-head span { font-size: 13.5px; color: var(--ink-3); }
+  .sdlg-body { padding: 16px 24px 24px; display: flex; flex-direction: column; gap: 0; }
+  .sdlg-lab {
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px;
+  }
+  .sdlg-hint { font-size: 12.5px; line-height: 18px; color: var(--ink-3); margin-top: 8px; }
+  .sdlg-list { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .sdlg-list .chip { opacity: 1; transform: none; animation: none; min-height: 40px; font-size: 14.5px; }
+  .sdlg-foot { padding: 16px 24px 22px; display: flex; align-items: center; gap: 14px; }
+  .sdlg-foot .claimbtn { margin-top: 0; flex: 1; }
+  .sdlg-foot .skiplink { flex: none; }
+  .sdlg-other {
+    font: inherit; font-size: 14.5px; width: 100%; margin-top: 8px;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line-2); border-radius: 8px; padding: 11px 13px;
+  }
+  .sdlg-other::placeholder { color: var(--ink-3); }
+  .sdlg-other:focus { outline: none; border-color: var(--accent); }
+
+  .closing {
+    margin-left: 39px; max-width: calc(100% - 39px);
+    display: flex; flex-direction: column; gap: 10px;
+    border: 1px solid var(--line-2); border-radius: 10px;
+    background: var(--frost); padding: 14px 16px;
+  }
+  .closing-t { font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .closing-row { display: flex; align-items: center; gap: 14px; }
+
+  /* Small round countdown loader — shown for a beat before the org gets set up. */
+  .miniloader {
+    margin-left: 39px; width: 30px; height: 30px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .miniloader-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2.5px solid var(--line-2); border-top-color: var(--accent);
+    animation: minispin .8s linear infinite;
+  }
+  .miniloader-num {
+    font-size: 12px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums;
+  }
+  @keyframes minispin { to { transform: rotate(360deg); } }
+
+  /* Confetti burst — fires once, over the whole viewport, when the org is created. */
+  .confetti-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute; top: -14px; width: 8px; height: 14px; opacity: .95;
+    border-radius: 2px;
+    animation-name: confetti-fall; animation-timing-function: cubic-bezier(.25,.46,.45,.94);
+    animation-fill-mode: forwards;
+  }
+  @keyframes confetti-fall {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+    100% { transform: translate3d(var(--drift, 0px), 108vh, 0) rotate(var(--rot, 600deg)); opacity: .85; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .confetti-layer { display: none; }
+  }
+
+  .promptbox {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 9px;
+    margin-left: 39px; max-width: calc(100% - 39px);
+  }
+  .prompttext {
+    margin: 0; width: 100%; overflow-x: auto;
+    background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px;
+    padding: 13px 15px; color: var(--ink);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12.5px; line-height: 20px; white-space: pre;
+  }
+  .cp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .composer {
+    border-top: 1px solid var(--line); padding: 14px 24px 18px;
+    display: flex; flex-direction: column; gap: 11px;
+    background: var(--composer); backdrop-filter: blur(12px);
+    transition: opacity .25s ease;
+  }
+  .composer.busy { opacity: .3; pointer-events: none; }
+  /* Options sit in the conversation, indented to the bubble column, so the
+     answer lands where the question is rather than in a tray at the bottom. */
+  .chips {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(252px, 1fr)); gap: 8px;
+    margin-left: 39px; max-width: calc(100% - 39px);
+  }
+  .chips:empty { display: none; }
+  /* One answer per row, control on the right: a list you choose from, not a
+     form you fill in. */
+  .chips.one { grid-template-columns: 1fr; }
+  .chips.rowfix { grid-template-columns: repeat(var(--cols, 2), 1fr); }
+  @media (max-width: 860px) { .chips.rowfix { grid-template-columns: 1fr !important; } }
+  .chip.one { justify-content: space-between; }
+  .chip.one .box { order: 2; }   /* full-width rows keep the control on the right */
+  .chip .radio {
+    width: 16px; height: 16px; flex: none; order: 2;
+    display: grid; place-items: center; border-radius: 50%;
+    border: 1px solid #c8cfdd; background: transparent;
+    transition: border-color .14s ease;
+  }
+  .chip.one .label { order: 1; }
+  .chip[aria-pressed="true"] .radio { border-color: var(--accent); }
+  .chip .radio i {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+    opacity: 0; transform: scale(.3);
+    transition: opacity .12s ease, transform .16s cubic-bezier(.2,.7,.3,1);
+  }
+  .chip[aria-pressed="true"] .radio i { opacity: 1; transform: none; }
+  .chip {
+    font: inherit; font-size: 16px; line-height: 24px; min-height: 44px; padding: 10px 15px; border-radius: 8px;
+    border: 1px solid var(--frost-line); background: var(--frost); color: var(--ink);
+    cursor: pointer; display: flex; align-items: center; gap: 10px; text-align: left;
+    transition: background .12s, border-color .12s, color .12s;
+    /* dealt out one at a time rather than the block landing at once */
+    opacity: 0; transform: translateY(9px);
+    animation: chipin .34s cubic-bezier(.2, .7, .3, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 55ms);
+  }
+  @keyframes chipin { to { opacity: 1; transform: none; } }
+  .chip:hover { border-color: var(--line-2); }
+  .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+  /* Checkbox from the design system: 16px, radius 4, field-control border when
+     empty, primary fill when ticked. */
+  /* h-4 w-4, rounded-sm, field-control border; the tick is the lucide Check the
+     DS renders, centred by the grid rather than positioned by hand — a tick
+     built from two rotated borders never sits on the true centre. */
+  .chip .box {
+    width: 16px; height: 16px; flex: none;
+    display: grid; place-items: center;
+    border: 1px solid #c8cfdd; border-radius: 4px; background: var(--surface);
+    transition: background .12s, border-color .12s;
+  }
+  .chip[aria-pressed="true"] .box { background: var(--accent); border-color: var(--accent); }
+  .chip .box svg {
+    width: 16px; height: 16px; display: block;
+    opacity: 0; transform: scale(.5);
+    transition: opacity .12s ease, transform .16s cubic-bezier(.2,.7,.3,1);
+  }
+  .chip[aria-pressed="true"] .box svg { opacity: 1; transform: none; }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip .label .sub { display: block; font-size: 13px; line-height: 18px; color: var(--ink-3); }
+  .chip[aria-pressed="true"] .label .sub { color: var(--ink-2); }
+  .chip .em { font-size: 16px; line-height: 1; flex: none; }
+  .chip .ic { flex: none; width: 18px; height: 18px; display: block; line-height: 0; }
+  .chip .ic svg { display: block; width: 18px; height: 18px; border-radius: 3px; }
+
+  .inputrow { display: flex; gap: 9px; align-items: flex-end; }
+  textarea {
+    flex: 1; resize: none; font: inherit; font-size: 14.5px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 9px;
+    padding: 10px 13px; min-height: 44px; max-height: 120px; line-height: 1.45;
+  }
+  textarea::placeholder { color: var(--ink-3); }
+  textarea:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+  .send {
+    font: inherit; font-size: 14px; font-weight: 500; padding: 11px 17px;
+    border-radius: 9px; border: 0; background: var(--accent); color: #fff; cursor: pointer; flex: none;
+  }
+  .send:disabled { opacity: .4; cursor: default; }
+  .hint { font-size: 12px; color: var(--ink-3); }
+  .hintrow { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  /* Both escape links removed from the flow entirely — hidden everywhere,
+     JS still sets them up but nothing renders. */
+  .escapes { display: none; }
+  .skiplink {
+    font: inherit; font-size: 12.5px; flex: none; cursor: pointer; padding: 0 0 1px;
+    background: none; border: 0; border-bottom: 1px solid transparent; color: var(--ink-3);
+  }
+  .skiplink:hover { color: var(--ink-2); border-bottom-color: var(--line-2); }
+  .skiplink:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .chip.free { border-style: dashed; }
+
+
+  .panel {
+    border-left: 1px solid var(--line); background: var(--surface-2);
+    padding: 22px 20px; display: flex; flex-direction: column; gap: 14px;
+    min-height: 0; overflow-y: auto;
+  }
+  @media (max-width: 880px) { .panel { border-left: 0; border-top: 1px solid var(--line); } }
+  .panel h2 {
+    font-size: 11px; font-family: "JetBrains Mono", ui-monospace, monospace;
+    letter-spacing: .11em; text-transform: uppercase; color: var(--ink-3); margin: 0; font-weight: 500;
+  }
+  .facts { display: flex; flex-direction: column; }
+  .fact { display: flex; flex-direction: column; gap: 1px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .fact:last-child { border-bottom: 0; }
+  .fact .k { font-size: 11.5px; color: var(--ink-3); }
+  .fact .v { font-size: 13.5px; color: var(--ink); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .fact.empty .v { color: var(--ink-3); font-weight: 400; }
+  .fact .pen { font-size: 11px; color: var(--ink-3); cursor: pointer; }
+  .fact.fresh { animation: land .5s ease-out; }
+  @keyframes land { from { background: var(--accent-soft); } to { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) { .fact.fresh { animation: none; } }
+  .panel .foot { margin-top: auto; font-size: 11.5px; color: var(--ink-3); line-height: 1.45; }
+
+  .notes { margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); gap: 12px; }
+  .note { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 15px 17px; display: flex; flex-direction: column; gap: 5px; }
+  .note b { font-size: 13px; }
+  .note span { font-size: 13px; color: var(--ink-2); }
+  .restart {
+    margin-top: 16px; font: inherit; font-size: 13px; background: none; border: 0;
+    color: var(--ink-3); cursor: pointer; padding: 0; border-bottom: 1px solid var(--line-2);
+  }
+  .restart:hover { color: var(--ink-2); }
+
+  /* Always-on-top close control — sits above hero and chat alike, exits the
+     onboarding the same way "Start over" does. */
+  .closex {
+    position: fixed; top: 18px; right: 18px; z-index: 1000;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--line-2); background: var(--surface);
+    color: var(--ink-3); font-size: 19px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .closex:hover { color: var(--ink); border-color: var(--ink-3); background: var(--surface-2); }
+  .closex:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+  <button class="closex" id="closeOnboarding" type="button" aria-label="Close onboarding">×</button>
+
+  <section class="hero" id="hero">
+    <div class="cells" id="cells" aria-hidden="true"></div>
+    <div class="hero-in">
+      <div class="brandpill"><span class="brandmark" id="brandmark"></span> LLM API</div>
+
+      <h1>Hi, there 👋</h1>
+      <p class="hero-sub">No new accounts. No sales call. Two minutes from here to a key that works — I just need to know who it is for.</p>
+
+      <div class="picks" role="radiogroup" aria-label="Who are you setting this up for?">
+        <button class="pick" type="button" role="radio" aria-checked="false" data-mode="solo" data-label="Just me">
+          <span class="radio"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg></span>
+          <span class="pick-ico">👤</span>
+          <span class="pick-t">Just me</span>
+          <span class="pick-d">A key, a spend ceiling, done. No projects, no roles, no invitations — none of that is your problem yet.</span>
+        </button>
+        <button class="pick" type="button" role="radio" aria-checked="false" data-mode="team" data-label="My team">
+          <span class="radio"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg></span>
+          <span class="pick-ico">👥</span>
+          <span class="pick-t">My team</span>
+          <span class="pick-d">Projects, roles and limits standing before the first person joins — so nobody ever gets a secret over Slack.</span>
+        </button>
+      </div>
+
+      <button class="cta" type="button" id="heroGo">Continue <span>→</span></button>
+
+      <button class="hero-skip" type="button" id="heroSkip">Just go to get started page</button>
+    </div>
+  </section>
+
+  <div class="app" hidden>
+    <div class="chat">
+      <div class="stream" id="stream"><div class="streamin" id="streamin"></div></div>
+      <div class="composer">
+        <div class="inputrow" id="inputrow">
+          <textarea id="box" rows="1"></textarea>
+          <button class="send" id="send">Continue</button>
+        </div>
+        <div class="hintrow">
+          <div class="hint" id="hint"></div>
+          <div class="escapes">
+            <button class="skiplink" id="skipstep" type="button" hidden>Skip this step</button>
+            <button class="skiplink" id="skip" type="button">Just give me the key</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="after">
+  <button class="restart" id="restart">Start over</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var stream = document.getElementById("stream");     // the scroller
+  var streamIn = document.getElementById("streamin"); // where turns are appended
+  var chipsEl = null;
+  var box = document.getElementById("box");
+  var send = document.getElementById("send");
+  var hint = document.getElementById("hint");
+  var inputrow = document.getElementById("inputrow");
+  var factsEl = document.getElementById("facts");  // gone with the panel; the
+                                                   // profile is kept in S only
+  var composer = document.querySelector(".composer");
+  var skipBtn = document.getElementById("skipstep");
+
+  var sampleFn = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then(function (s) { sampleFn = s; }).catch(function () {});
+  }
+
+  var S = {};            // profile state
+  var picked = [];       // current multi-select
+  var stepId = null;
+
+  /* ---------------- catalogues ---------------- */
+
+  // Tasks in the user's own words, not capability names — "Research", not
+  // "Web Search". Alphabetical, same house rule as SEEDS. Two of these
+  // (image/video, speech) run on a different model family than the one this
+  // flow recommends, so they are answered in words rather than by filtering.
+  // The label is the task in their words; the sub is what it does to the data,
+  // in the shorthand a developer already scans for. Every label stays on one
+  // line so the two columns keep an even baseline.
+  var MODALITIES = [
+    // Copywriting is gone: to a model it is the same plain text-to-text as
+    // chat, so the two rows bought the same answer twice. Its examples moved up.
+    { v: "chat",     label: "Chat & reasoning",        sub: "conversations, drafts, summaries" },
+    { v: "coding",   label: "Coding",                  sub: "write, explain, refactor" },
+    { v: "imagevid", label: "Image & video generation", sub: "text to image, text to video" },
+    { v: "extract",  label: "Reading images & docs",    sub: "image to text, PDF to text" },
+    { v: "research", label: "Research & live web",      sub: "search first, then answer" },
+    { v: "speech",   label: "Speech",                   sub: "speech to text, text to speech" }
+  ];
+
+  // The two that need a model this flow does not pick.
+  function offTextModel(mods) {
+    return (mods || []).filter(function (m) { return m === "imagevid" || m === "speech"; });
+  }
+
+  // Provider marks lifted from provider-icons.tsx; the three routes with no
+  // brand asset in the repo get neutral glyphs instead of invented logos.
+  var ROUTE_ICON = {
+    openai: "<svg width=\"18\" height=\"18\" xmlns=\"http://www.w3.org/2000/svg\" shape-rendering=\"geometricPrecision\" text-rendering=\"geometricPrecision\" image-rendering=\"optimizeQuality\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" viewBox=\"0 0 512 509.639\" > <path fill=\"#fff\" d=\"M115.612 0h280.775C459.974 0 512 52.026 512 115.612v278.415c0 63.587-52.026 115.613-115.613 115.613H115.612C52.026 509.64 0 457.614 0 394.027V115.612C0 52.026 52.026 0 115.612 0z\" /> <path fill-rule=\"nonzero\" d=\"M412.037 221.764a90.834 90.834 0 0 0 4.648-28.67 90.79 90.79 0 0 0-12.443-45.87c-16.37-28.496-46.738-46.089-79.605-46.089-6.466 0-12.943.683-19.264 2.04a90.765 90.765 0 0 0-67.881-30.515h-.576c-.059.002-.149.002-.216.002-39.807 0-75.108 25.686-87.346 63.554-25.626 5.239-47.748 21.31-60.682 44.03a91.873 91.873 0 0 0-12.407 46.077 91.833 91.833 0 0 0 23.694 61.553 90.802 90.802 0 0 0-4.649 28.67 90.804 90.804 0 0 0 12.442 45.87c16.369 28.504 46.74 46.087 79.61 46.087a91.81 91.81 0 0 0 19.253-2.04 90.783 90.783 0 0 0 67.887 30.516h.576l.234-.001c39.829 0 75.119-25.686 87.357-63.588 25.626-5.242 47.748-21.312 60.682-44.033a91.718 91.718 0 0 0 12.383-46.035 91.83 91.83 0 0 0-23.693-61.553l-.004-.005zM275.102 413.161h-.094a68.146 68.146 0 0 1-43.611-15.8 56.936 56.936 0 0 0 2.155-1.221l72.54-41.901a11.799 11.799 0 0 0 5.962-10.251V241.651l30.661 17.704c.326.163.55.479.596.84v84.693c-.042 37.653-30.554 68.198-68.21 68.273h.001zm-146.689-62.649a68.128 68.128 0 0 1-9.152-34.085c0-3.904.341-7.817 1.005-11.663.539.323 1.48.897 2.155 1.285l72.54 41.901a11.832 11.832 0 0 0 11.918-.002l88.563-51.137v35.408a1.1 1.1 0 0 1-.438.94l-73.33 42.339a68.43 68.43 0 0 1-34.11 9.12 68.359 68.359 0 0 1-59.15-34.11l-.001.004zm-19.083-158.36a68.044 68.044 0 0 1 35.538-29.934c0 .625-.036 1.731-.036 2.5v83.801l-.001.07a11.79 11.79 0 0 0 5.954 10.242l88.564 51.13-30.661 17.704a1.096 1.096 0 0 1-1.034.093l-73.337-42.375a68.36 68.36 0 0 1-34.095-59.143 68.412 68.412 0 0 1 9.112-34.085l-.004-.003zm251.907 58.621-88.563-51.137 30.661-17.697a1.097 1.097 0 0 1 1.034-.094l73.337 42.339c21.109 12.195 34.132 34.746 34.132 59.132 0 28.604-17.849 54.199-44.686 64.078v-86.308c.004-.032.004-.065.004-.096 0-4.219-2.261-8.119-5.919-10.217zm30.518-45.93c-.539-.331-1.48-.898-2.155-1.286l-72.54-41.901a11.842 11.842 0 0 0-5.958-1.611c-2.092 0-4.15.558-5.957 1.611l-88.564 51.137v-35.408l-.001-.061a1.1 1.1 0 0 1 .44-.88l73.33-42.303a68.301 68.301 0 0 1 34.108-9.129c37.704 0 68.281 30.577 68.281 68.281a68.69 68.69 0 0 1-.984 11.545v.005zm-191.843 63.109-30.668-17.704a1.09 1.09 0 0 1-.596-.84v-84.692c.016-37.685 30.593-68.236 68.281-68.236a68.332 68.332 0 0 1 43.689 15.804 63.09 63.09 0 0 0-2.155 1.222l-72.54 41.9a11.794 11.794 0 0 0-5.961 10.248v.068l-.05 102.23zm16.655-35.91 39.445-22.782 39.444 22.767v45.55l-39.444 22.767-39.445-22.767v-45.535z\" /> </svg>",
+    anthropic: "<svg width=\"18\" height=\"18\" xmlns=\"http://www.w3.org/2000/svg\" shape-rendering=\"geometricPrecision\" text-rendering=\"geometricPrecision\" image-rendering=\"optimizeQuality\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" viewBox=\"0 0 512 509.64\" > <path fill=\"#D77655\" d=\"M115.612 0h280.775C459.974 0 512 52.026 512 115.612v278.415c0 63.587-52.026 115.612-115.613 115.612H115.612C52.026 509.639 0 457.614 0 394.027V115.612C0 52.026 52.026 0 115.612 0z\" /> <path fill=\"#FCF2EE\" fill-rule=\"nonzero\" d=\"m142.27 316.619 73.655-41.326 1.238-3.589-1.238-1.996-3.589-.001-12.31-.759-42.084-1.138-36.498-1.516-35.361-1.896-8.897-1.895-8.34-10.995.859-5.484 7.482-5.03 10.717.935 23.683 1.617 35.537 2.452 25.782 1.517 38.193 3.968h6.064l.86-2.451-2.073-1.517-1.618-1.517-36.776-24.922-39.81-26.338-20.852-15.166-11.273-7.683-5.687-7.204-2.451-15.721 10.237-11.273 13.75.935 3.513.936 13.928 10.716 29.749 23.027 38.848 28.612 5.687 4.727 2.275-1.617.278-1.138-2.553-4.271-21.13-38.193-22.546-38.848-10.035-16.101-2.654-9.655c-.935-3.968-1.617-7.304-1.617-11.374l11.652-15.823 6.445-2.073 15.545 2.073 6.547 5.687 9.655 22.092 15.646 34.78 24.265 47.291 7.103 14.028 3.791 12.992 1.416 3.968 2.449-.001v-2.275l1.997-26.641 3.69-32.707 3.589-42.084 1.239-11.854 5.863-14.206 11.652-7.683 9.099 4.348 7.482 10.716-1.036 6.926-4.449 28.915-8.72 45.294-5.687 30.331h3.313l3.792-3.791 15.342-20.372 25.782-32.227 11.374-12.789 13.27-14.129 8.517-6.724 16.1-.001 11.854 17.617-5.307 18.199-16.581 21.029-13.75 17.819-19.716 26.54-12.309 21.231 1.138 1.694 2.932-.278 44.536-9.479 24.062-4.347 28.714-4.928 12.992 6.066 1.416 6.167-5.106 12.613-30.71 7.583-36.018 7.204-53.636 12.689-.657.48.758.935 24.164 2.275 10.337.556h25.301l47.114 3.514 12.309 8.139 7.381 9.959-1.238 7.583-18.957 9.655-25.579-6.066-59.702-14.205-20.474-5.106-2.83-.001v1.694l17.061 16.682 31.266 28.233 39.152 36.397 1.997 8.999-5.03 7.102-5.307-.758-34.401-25.883-13.27-11.651-30.053-25.302-1.996-.001v2.654l6.926 10.136 36.574 54.975 1.895 16.859-2.653 5.485-9.479 3.311-10.414-1.895-21.408-30.054-22.092-33.844-17.819-30.331-2.173 1.238-10.515 113.261-4.929 5.788-11.374 4.348-9.478-7.204-5.03-11.652 5.03-23.027 6.066-30.052 4.928-23.886 4.449-29.674 2.654-9.858-.177-.657-2.173.278-22.37 30.71-34.021 45.977-26.919 28.815-6.445 2.553-11.173-5.789 1.037-10.337 6.243-9.2 37.257-47.392 22.47-29.371 14.508-16.961-.101-2.451h-.859l-98.954 64.251-17.618 2.275-7.583-7.103.936-11.652 3.589-3.791 29.749-20.474-.101.102.024.101z\" /> </svg>",
+    azure: "<svg width=\"18\" height=\"18\" width=\"150\" height=\"150\" viewBox=\"0 0 96 96\" xmlns=\"http://www.w3.org/2000/svg\" > <defs> <linearGradient id=\"azure-e399c19f-b68f-429d-b176-18c2117ff73c\" x1=\"-1032.172\" x2=\"-1059.213\" y1=\"145.312\" y2=\"65.426\" gradient-transform=\"matrix(1 0 0 -1 1075 158)\" gradient-units=\"userSpaceOnUse\" > <stop offset=\"0\" stop-color=\"#114a8b\" /> <stop offset=\"1\" stop-color=\"#0669bc\" /> </linearGradient> <linearGradient id=\"azure-ac2a6fc2-ca48-4327-9a3c-d4dcc3256e15\" x1=\"-1023.725\" x2=\"-1029.98\" y1=\"108.083\" y2=\"105.968\" gradient-transform=\"matrix(1 0 0 -1 1075 158)\" gradient-units=\"userSpaceOnUse\" > <stop offset=\"0\" stop-opacity=\"0.3\" /> <stop offset=\"0.071\" stop-opacity=\"0.2\" /> <stop offset=\"0.321\" stop-opacity=\"0.1\" /> <stop offset=\"0.623\" stop-opacity=\"0.05\" /> <stop offset=\"1\" stop-opacity=\"0\" /> </linearGradient> <linearGradient id=\"azure-a7fee970-a784-4bb1-af8d-63d18e5f7db9\" x1=\"-1027.165\" x2=\"-997.482\" y1=\"147.642\" y2=\"68.561\" gradient-transform=\"matrix(1 0 0 -1 1075 158)\" gradient-units=\"userSpaceOnUse\" > <stop offset=\"0\" stop-color=\"#3ccbf4\" /> <stop offset=\"1\" stop-color=\"#2892df\" /> </linearGradient> </defs> <path fill=\"url(#azure-e399c19f-b68f-429d-b176-18c2117ff73c)\" d=\"M33.338 6.544h26.038l-27.03 80.087a4.152 4.152 0 0 1-3.933 2.824H8.149a4.145 4.145 0 0 1-3.928-5.47L29.404 9.368a4.152 4.152 0 0 1 3.934-2.825z\" /> <path fill=\"#0078d4\" d=\"M71.175 60.261h-41.29a1.911 1.911 0 0 0-1.305 3.309l26.532 24.764a4.171 4.171 0 0 0 2.846 1.121h23.38z\" /> <path fill=\"url(#azure-ac2a6fc2-ca48-4327-9a3c-d4dcc3256e15)\" d=\"M33.338 6.544a4.118 4.118 0 0 0-3.943 2.879L4.252 83.917a4.14 4.14 0 0 0 3.908 5.538h20.787a4.443 4.443 0 0 0 3.41-2.9l5.014-14.777 17.91 16.705a4.237 4.237 0 0 0 2.666.972H81.24L71.024 60.261l-29.781.007L59.47 6.544z\" /> <path fill=\"url(#azure-a7fee970-a784-4bb1-af8d-63d18e5f7db9)\" d=\"M66.595 9.364a4.145 4.145 0 0 0-3.928-2.82H33.648a4.146 4.146 0 0 1 3.928 2.82l25.184 74.62a4.146 4.146 0 0 1-3.928 5.472h29.02a4.146 4.146 0 0 0 3.927-5.472z\" /> </svg>",
+    bedrock: "<svg width=\"18\" height=\"18\" xmlns=\"http://www.w3.org/2000/svg\" xmlns-xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 304 182\" xml-space=\"preserve\" > <g> <path d=\"M86.4,66.4c0,3.7,0.4,6.7,1.1,8.9c0.8,2.2,1.8,4.6,3.2,7.2c0.5,0.8,0.7,1.6,0.7,2.3c0,1-0.6,2-1.9,3l-6.3,4.2 c-0.9,0.6-1.8,0.9-2.6,0.9c-1,0-2-0.5-3-1.4C76.2,90,75,88.4,74,86.8c-1-1.7-2-3.6-3.1-5.9c-7.8,9.2-17.6,13.8-29.4,13.8 c-8.4,0-15.1-2.4-20-7.2c-4.9-4.8-7.4-11.2-7.4-19.2c0-8.5,3-15.4,9.1-20.6c6.1-5.2,14.2-7.8,24.5-7.8c3.4,0,6.9,0.3,10.6,0.8 c3.7,0.5,7.5,1.3,11.5,2.2v-7.3c0-7.6-1.6-12.9-4.7-16c-3.2-3.1-8.6-4.6-16.3-4.6c-3.5,0-7.1,0.4-10.8,1.3c-3.7,0.9-7.3,2-10.8,3.4 c-1.6,0.7-2.8,1.1-3.5,1.3c-0.7,0.2-1.2,0.3-1.6,0.3c-1.4,0-2.1-1-2.1-3.1v-4.9c0-1.6,0.2-2.8,0.7-3.5c0.5-0.7,1.4-1.4,2.8-2.1 c3.5-1.8,7.7-3.3,12.6-4.5c4.9-1.3,10.1-1.9,15.6-1.9c11.9,0,20.6,2.7,26.2,8.1c5.5,5.4,8.3,13.6,8.3,24.6V66.4z M45.8,81.6 c3.3,0,6.7-0.6,10.3-1.8c3.6-1.2,6.8-3.4,9.5-6.4c1.6-1.9,2.8-4,3.4-6.4c0.6-2.4,1-5.3,1-8.7v-4.2c-2.9-0.7-6-1.3-9.2-1.7 c-3.2-0.4-6.3-0.6-9.4-0.6c-6.7,0-11.6,1.3-14.9,4c-3.3,2.7-4.9,6.5-4.9,11.5c0,4.7,1.2,8.2,3.7,10.6 C37.7,80.4,41.2,81.6,45.8,81.6z M126.1,92.4c-1.8,0-3-0.3-3.8-1c-0.8-0.6-1.5-2-2.1-3.9L96.7,10.2c-0.6-2-0.9-3.3-0.9-4 c0-1.6,0.8-2.5,2.4-2.5h9.8c1.9,0,3.2,0.3,3.9,1c0.8,0.6,1.4,2,2,3.9l16.8,66.2l15.6-66.2c0.5-2,1.1-3.3,1.9-3.9c0.8-0.6,2.2-1,4-1 h8c1.9,0,3.2,0.3,4,1c0.8,0.6,1.5,2,1.9,3.9l15.8,67l17.3-67c0.6-2,1.3-3.3,2-3.9c0.8-0.6,2.1-1,3.9-1h9.3c1.6,0,2.5,0.8,2.5,2.5 c0,0.5-0.1,1-0.2,1.6c-0.1,0.6-0.3,1.4-0.7,2.5l-24.1,77.3c-0.6,2-1.3,3.3-2.1,3.9c-0.8,0.6-2.1,1-3.8,1h-8.6c-1.9,0-3.2-0.3-4-1 c-0.8-0.7-1.5-2-1.9-4L156,23l-15.4,64.4c-0.5,2-1.1,3.3-1.9,4c-0.8,0.7-2.2,1-4,1H126.1z M254.6,95.1c-5.2,0-10.4-0.6-15.4-1.8 c-5-1.2-8.9-2.5-11.5-4c-1.6-0.9-2.7-1.9-3.1-2.8c-0.4-0.9-0.6-1.9-0.6-2.8v-5.1c0-2.1,0.8-3.1,2.3-3.1c0.6,0,1.2,0.1,1.8,0.3 c0.6,0.2,1.5,0.6,2.5,1c3.4,1.5,7.1,2.7,11,3.5c4,0.8,7.9,1.2,11.9,1.2c6.3,0,11.2-1.1,14.6-3.3c3.4-2.2,5.2-5.4,5.2-9.5 c0-2.8-0.9-5.1-2.7-7c-1.8-1.9-5.2-3.6-10.1-5.2L246,52c-7.3-2.3-12.7-5.7-16-10.2c-3.3-4.4-5-9.3-5-14.5c0-4.2,0.9-7.9,2.7-11.1 c1.8-3.2,4.2-6,7.2-8.2c3-2.3,6.4-4,10.4-5.2c4-1.2,8.2-1.7,12.6-1.7c2.2,0,4.5,0.1,6.7,0.4c2.3,0.3,4.4,0.7,6.5,1.1 c2,0.5,3.9,1,5.7,1.6c1.8,0.6,3.2,1.2,4.2,1.8c1.4,0.8,2.4,1.6,3,2.5c0.6,0.8,0.9,1.9,0.9,3.3v4.7c0,2.1-0.8,3.2-2.3,3.2 c-0.8,0-2.1-0.4-3.8-1.2c-5.7-2.6-12.1-3.9-19.2-3.9c-5.7,0-10.2,0.9-13.3,2.8c-3.1,1.9-4.7,4.8-4.7,8.9c0,2.8,1,5.2,3,7.1 c2,1.9,5.7,3.8,11,5.5l14.2,4.5c7.2,2.3,12.4,5.5,15.5,9.6c3.1,4.1,4.6,8.8,4.6,14c0,4.3-0.9,8.2-2.6,11.6 c-1.8,3.4-4.2,6.4-7.3,8.8c-3.1,2.5-6.8,4.3-11.1,5.6C264.4,94.4,259.7,95.1,254.6,95.1z\" /> <g> <path d=\"M273.5,143.7c-32.9,24.3-80.7,37.2-121.8,37.2c-57.6,0-109.5-21.3-148.7-56.7c-3.1-2.8-0.3-6.6,3.4-4.4 c42.4,24.6,94.7,39.5,148.8,39.5c36.5,0,76.6-7.6,113.5-23.2C274.2,133.6,278.9,139.7,273.5,143.7z\" /> <path d=\"M287.2,128.1c-4.2-5.4-27.8-2.6-38.5-1.3c-3.2,0.4-3.7-2.4-0.8-4.5c18.8-13.2,49.7-9.4,53.3-5 c3.6,4.5-1,35.4-18.6,50.2c-2.7,2.3-5.3,1.1-4.1-1.9C282.5,155.7,291.4,133.4,287.2,128.1z\" /> </g> </g> </svg>",
+    google: "<svg width=\"18\" height=\"18\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512.0022 410.9278\" > <path d=\"M320.60156 300.90234c-.7539 8.3125 1.89063 16.71094 7.53516 22.85547 5.64453 6.14453 13.61328 9.39844 20.85937 12.28516 7.91016 3.13281 14.75 5.69531 22.13672 10.12109 7.03906 4.21485 13.26563 9.45703 18.47266 15.92969 21.41015 26.46875 19.42969 65.3125-4.50781 89.40625-23.94532 24.08984-61.90625 25.38672-87.35938 3.01172-6.48828-5.72266-12.25-13.07031-16.99219-20.26563-7.21093-47.88281 6.78125-98.05078 39.85547-133.34375zm0 0\" transform=\"translate(.00007258 -59.539832)\" style=\"fill:rgb(133, 168, 255);fill-opacity:1;fill-rule:nonzero;stroke:none\" /> <path d=\"M351.08984 276.33203c7.94141-4.69531 15.35938-8.00781 24-11.08203 8.32032-2.94922 16.78516-5.39063 25.33985-7.58594 8.52343-2.19922 17.13281-4.0664 25.74218-5.93359 8.61329-1.86719 17.16407-3.67188 25.48438-6.89453 40.75391-15.83985 65.42578-58.39063 59.46094-102.62891-5.96485-44.234374-40.96094-78.351561-84.39063-82.296874-19.72265-1.777344-38.77734 2.980469-56.40625 11.320313-17.57031 8.3125-33.66015 20.117187-47.65234 33.636721-28.27344 27.2539-49.16406 62.24609-61.90625 99.49609-12.82813 37.48828-17.62891 77.8125-14.60156 117.35156 1.51171 19.69532 5.0039 39.50782 10.58984 58.44922 5.46875 18.57813 13.38281 37.76172 24.02734 54.02344-4.59765-30.44531-.64062-61.91406 11.60938-90.09766 12.21484-28.125 32.46484-52.21875 58.70312-67.75781zm0 0\" transform=\"translate(.00007258 -59.539832)\" style=\"fill:rgb(0, 87, 204);fill-opacity:1;fill-rule:nonzero;stroke:none\" /> <path d=\"M169.85156 303.28906c-2.79297-3.1914-5.69922-6.23437-8.92969-8.9414 4.01563 7.04687 4.42188 15.02734 2.73438 22.70312-1.6875 7.64844-5.41016 14.72656-10.12109 20.80859-4.85938 6.23438-10.5625 11.20313-16.75782 15.90235-5.41015 4.09375-13.29296 9.33594-18.18359 14.24219-14.36719 14.45312-17.30859 37.03906-7.125 54.80468 10.17969 17.79688 30.83594 26.23047 50.17969 20.44922 10.67578-3.19531 19.72656-10.39062 26.91015-18.60937 7.27344-8.3125 13.17969-18.19141 17.83203-28.1875-1.1914-34.48047-14.10937-67.42578-36.53906-93.17188zm0 0\" transform=\"translate(.00007258 -59.539832)\" style=\"fill:rgb(133, 168, 255);fill-opacity:1;fill-rule:nonzero;stroke:none\" /> <path d=\"M78.65625 111.36719c29.58203-.0312 58.29687 16.80078 79.09375 35.68359 22.08203 20.05469 39.1875 45.58984 50.44531 73.35547 11.31641 27.91406 16.75781 58.08594 16.55078 88.23047-.20312 29.30078-5.84765 61.03906-18.35547 87.8125-1.1914-34.48047-14.10937-67.45703-36.53515-93.19922-3.92969-4.48828-8.03125-8.55469-12.91797-11.98828-4.88672-3.4336-10.03516-5.96094-15.59375-7.97656-10.79297-3.91797-22.98047-5.75391-34.21094-7.01954-11.578122-1.32421-23.214841-2.10546-34.761716-3.85546-11.867188-1.80469-22.515625-4.45313-33.105469-10.75-30.835937-18.2461-45.789063-55.40625-36.566406-90.57813 9.222656-35.20312 40.378906-59.6875 75.957031-59.71484Zm0 0\" transform=\"translate(.00007258 -59.539832)\" style=\"fill:rgb(0, 87, 204);fill-opacity:1;fill-rule:nonzero;stroke:none\" /> </svg>",
+    openrouter: "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#5b6172\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"6\" cy=\"6\" r=\"2.5\"/><circle cx=\"18\" cy=\"6\" r=\"2.5\"/><circle cx=\"12\" cy=\"19\" r=\"2.5\"/><path d=\"M6 8.5v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2\"/><path d=\"M12 12.5v4\"/></svg>",
+    local: "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#5b6172\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"7\" rx=\"1.6\"/><rect x=\"3\" y=\"13\" width=\"18\" height=\"7\" rx=\"1.6\"/><path d=\"M7 7.5h.01M7 16.5h.01\"/></svg>",
+    none: "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#5b6172\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"8.5\" stroke-dasharray=\"3 3\"/></svg>"
+  };
+
+  // Routes, not vendors: this answers "where do the calls go", which is the same
+  // axis as providerId in our own catalogue (azure, aws-bedrock, google-ai-studio…).
+  var ROUTES = [
+    { v: "openai", label: "OpenAI API" },
+    { v: "anthropic", label: "Anthropic API" },
+    { v: "azure", label: "Azure OpenAI" },
+    { v: "bedrock", label: "AWS Bedrock" },
+    { v: "google", label: "Google AI Studio / Vertex" },
+    { v: "openrouter", label: "OpenRouter" },
+    { v: "local", label: "Local / self-hosted" },
+    { v: "none", label: "Nothing yet" }
+  ].map(function (r) { r.icon = ROUTE_ICON[r.v]; return r; });
+
+  // Where the models they already call actually sit in our catalogue.
+  var ROUTE_HOST = {
+    openai: "azure", anthropic: "bedrock", azure: "azure",
+    bedrock: "bedrock", google: "google"
+  };
+
+  // Real ids, hosts and prices from GET /v1/models (per 1M tokens).
+  var MODELS = [
+    // starter — one per host, what the $10 is actually for
+    { id: "nova-2-lite", host: "bedrock", label: "Amazon · Bedrock", in: 0.04, out: 0.16, ctx: "1M", tier: "starter", caps: ["chat", "tools", "reasoning"] },
+    { id: "nova-lite", host: "bedrock", label: "Amazon · Bedrock", in: 0.06, out: 0.24, ctx: "300k", tier: "starter", caps: ["chat", "vision", "tools"] },
+    { id: "gpt-5-nano", host: "azure", label: "OpenAI · Azure", in: 0.05, out: 0.40, ctx: "400k", tier: "starter", caps: ["chat", "vision", "tools", "reasoning", "search"] },
+    { id: "gemini-2.5-flash-lite", host: "google", label: "Google · AI Studio", in: 0.10, out: 0.40, ctx: "1M", tier: "starter", caps: ["chat", "vision", "tools"] },
+    { id: "gemini-3.1-flash-lite", host: "google", label: "Google · AI Studio", in: 0.25, out: 1.50, ctx: "1M", tier: "starter", caps: ["chat", "vision", "tools", "reasoning"] },
+    { id: "deepseek-v4-flash", host: "azure", label: "DeepSeek · Azure", in: 0.19, out: 0.51, ctx: "1M", tier: "starter", caps: ["chat", "tools", "reasoning", "search"] },
+    { id: "kimi-k2.6", host: "azure", label: "Moonshot · Azure", in: 0.95, out: 4.00, ctx: "262k", tier: "starter", caps: ["chat", "vision", "tools", "reasoning", "search"] },
+    // premium — same three hosts, what a top-up is for
+    { id: "gpt-5.1", host: "azure", label: "OpenAI · Azure", in: 1.25, out: 10.0, ctx: "400k", tier: "premium", caps: ["chat", "vision", "tools", "reasoning", "search"] },
+    { id: "claude-sonnet-5", host: "bedrock", label: "Anthropic · Bedrock", in: 2.0, out: 10.0, ctx: "1M", tier: "premium", caps: ["chat", "vision", "tools", "reasoning", "search"] },
+    { id: "gemini-3.1-pro-preview", host: "google", label: "Google · AI Studio", in: 2.0, out: 12.0, ctx: "1M", tier: "premium", caps: ["chat", "vision", "tools", "reasoning"] }
+  ];
+
+  // $10 at a typical 3:1 input/output mix, in millions of tokens.
+
+  // Price-ceiling tiers, applied by default rather than asked about.
+  var CEILING_TIERS = [2, 5, 15];
+
+  var ACCESS = [
+    { v: "eng", label: "Engineers" },
+    { v: "finance", label: "+ a finance owner" },
+    { v: "security", label: "+ security sign-off" },
+    { v: "unsure", label: "Not sure yet" }
+  ];
+
+  var PAINS_ORG = [
+    { v: "spend",     label: "I need tighter control over AI spend" },
+    { v: "modelpick", label: "I need a reliable way to choose the right model" },
+    { v: "provider",  label: "I can't rely on one provider" },
+    { v: "access",    label: "I need separate access per team and project" },
+    { v: "residency", label: "I have strict data residency requirements" },
+    { v: "scratch",   label: "I'm building my AI stack from scratch" }
+  ];
+
+  var ENDPOINT = "https://api.llmapi.ai/v1";
+
+  // Prototype stand-in for "the email you signed up with" \u2014 in the real
+  // app this reads the account's own address, not a hardcoded one.
+  var DEMO_EMAIL = "you@brightloop.ai";
+  function orgNameFromEmail(email) {
+    var domain = (email.split("@")[1] || "").split(".")[0];
+    return domain.charAt(0).toUpperCase() + domain.slice(1);
+  }
+
+  // Provisioned once per session, the way the real key is: shown, then never again.
+  function genKey() {
+    var abc = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    var out = "";
+    var rnd = new Uint8Array(40);
+    (window.crypto || window.msCrypto).getRandomValues(rnd);
+    for (var i = 0; i < rnd.length; i++) out += abc.charAt(rnd[i] % abc.length);
+    return "sk-llmapi-" + out;
+  }
+  var KEY = genKey();
+
+  /* ---------------- profile panel ---------------- */
+
+  var ROWS_SOLO = [
+    ["building", "What you're building"], ["mode", "Who with"],
+    ["needs", "Needs"], ["maturity", "Usage stage"], ["calls", "Calls go to"],
+    ["model", "Default model"], ["ceiling", "Price ceiling"],
+    ["key", "API key"], ["credits", "Credits"]
+  ];
+  var ROWS_ORG = [
+    ["building", "What you're building"], ["mode", "Who with"],
+    ["calls", "Calls go to"], ["access", "Who needs access"],
+    ["worry", "What worries you"], ["maturity", "Usage stage"], ["budget", "Project budget"],
+    ["project", "Project"], ["key", "API key"]
+  ];
+
+  function rows() { return S.branch === "org" ? ROWS_ORG : ROWS_SOLO; }
+
+  function renderFacts(fresh) {
+    if (!factsEl) return;
+    factsEl.textContent = "";
+    rows().forEach(function (r) {
+      var val = S[r[0]];
+      var d = document.createElement("div");
+      d.className = "fact" + (val ? "" : " empty") + (r[0] === fresh ? " fresh" : "");
+      var k = document.createElement("div"); k.className = "k"; k.textContent = r[1];
+      var v = document.createElement("div"); v.className = "v"; v.textContent = val || "—";
+      if (val) { var p = document.createElement("span"); p.className = "pen"; p.textContent = "✎"; v.appendChild(p); }
+      d.appendChild(k); d.appendChild(v);
+      factsEl.appendChild(d);
+    });
+  }
+
+  /* ---------------- message helpers ---------------- */
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function scroll() { stream.scrollTop = stream.scrollHeight; }
+
+  /* the LLM API mark, straight from packages ui/logo.tsx (mark only, no wordmark) */
+  var LOGO =
+    '<svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<rect width="72" height="72" rx="8" fill="#3F35FF"/>' +
+    '<path d="M24.136 33.9485L12.0218 27.1098L24.136 20.2711L36.2501 27.1098L24.136 33.9485Z" fill="white"/>' +
+    '<path d="M23.907 19.3922C24.1323 19.3336 24.3742 19.3628 24.5822 19.4801L36.6971 26.3176C36.9826 26.4788 37.1585 26.7827 37.1585 27.1106C37.1582 27.4382 36.9824 27.7406 36.6971 27.9017L24.5822 34.7391C24.3048 34.8956 23.9666 34.8957 23.6893 34.7391L11.5743 27.9017C11.2892 27.7405 11.1132 27.4381 11.1129 27.1106C11.1129 26.7828 11.2889 26.4789 11.5743 26.3176L23.6893 19.4801L23.907 19.3922ZM13.8715 27.1086L24.1347 32.9034L34.3999 27.1086L24.1347 21.3139L13.8715 27.1086Z" fill="black"/>' +
+    '<path d="M12.0218 27.1098V44.1205L24.136 50.9591V42.7527V33.9485L12.0218 27.1098Z" fill="black"/>' +
+    '<path d="M23.2278 34.4786L12.9306 28.6659V43.5893L23.2278 49.4021V34.4786ZM25.0456 50.9581C25.0456 51.2813 24.8733 51.5822 24.5941 51.7451C24.3152 51.9077 23.9705 51.9097 23.6893 51.7511L11.5743 44.9117C11.2892 44.7504 11.113 44.4483 11.1129 44.1206V27.1098C11.1129 26.7866 11.2852 26.4877 11.5643 26.3248C11.8434 26.1622 12.188 26.16 12.4692 26.3188L24.5821 33.1563C24.8677 33.3175 25.0456 33.6214 25.0456 33.9493V50.9581Z" fill="black"/>' +
+    '<path d="M36.2501 27.1098V44.1205L24.1359 50.9591V42.7527V33.9485L36.2501 27.1098Z" fill="white"/>' +
+    '<path d="M35.8034 26.3188C36.0848 26.1599 36.4291 26.1619 36.7082 26.3248C36.9874 26.4878 37.1597 26.7866 37.1597 27.1098V44.1206C37.1596 44.4485 36.9818 44.7505 36.6962 44.9117L24.5833 51.7512C24.3022 51.9098 23.9574 51.9075 23.6784 51.7452C23.3993 51.5822 23.227 51.2814 23.227 50.9581V33.9493C23.227 33.6214 23.403 33.3175 23.6884 33.1563L35.8034 26.3188ZM25.0447 49.4001L35.3419 43.5893V28.6639L25.0447 34.4786V49.4001Z" fill="black"/>' +
+    '<path d="M48.3642 33.9485L36.25 27.1098L48.3642 20.2711L60.4784 27.1098L48.3642 33.9485Z" fill="white"/>' +
+    '<path d="M48.1352 19.3922C48.3605 19.3336 48.6025 19.3628 48.8104 19.4801L60.9253 26.3176C61.2109 26.4788 61.3868 26.7827 61.3868 27.1106C61.3864 27.4382 61.2107 27.7406 60.9253 27.9017L48.8104 34.7391C48.5331 34.8956 48.1948 34.8957 47.9175 34.7391L35.8026 27.9017C35.5175 27.7405 35.3415 27.4381 35.3412 27.1106C35.3412 26.7828 35.5171 26.4789 35.8026 26.3176L47.9175 19.4801L48.1352 19.3922ZM38.0997 27.1086L48.363 32.9034L58.6282 27.1086L48.363 21.3139L38.0997 27.1086Z" fill="black"/>' +
+    '<path d="M60.4784 27.1098V44.1205L48.3642 50.9591V42.7527V33.9485L60.4784 27.1098Z" fill="white"/>' +
+    '<path d="M60.0317 26.3188C60.3131 26.1599 60.6575 26.1619 60.9366 26.3248C61.2157 26.4878 61.388 26.7866 61.388 27.1098V44.1206C61.388 44.4485 61.2101 44.7505 60.9246 44.9117L48.8117 51.7512C48.5306 51.9098 48.1857 51.9075 47.9068 51.7452C47.6277 51.5822 47.4554 51.2814 47.4554 50.9581V33.9493C47.4554 33.6214 47.6313 33.3175 47.9168 33.1563L60.0317 26.3188ZM49.2731 49.4001L59.5703 43.5893V28.6639L49.2731 34.4786V49.4001Z" fill="black"/>' +
+    '<path d="M24.136 47.6218L12.0218 40.7832L24.136 33.9445L36.2501 40.7832L24.136 47.6218Z" fill="white"/>' +
+    '<path d="M23.907 33.0656C24.1323 33.0069 24.3742 33.0362 24.5822 33.1535L36.6971 39.991C36.9826 40.1522 37.1585 40.4561 37.1585 40.784C37.1582 41.1116 36.9824 41.4139 36.6971 41.575L24.5822 48.4125C24.3048 48.569 23.9666 48.5691 23.6893 48.4125L11.5743 41.575C11.2892 41.4139 11.1132 41.1115 11.1129 40.784C11.1129 40.4561 11.2889 40.1522 11.5743 39.991L23.6893 33.1535L23.907 33.0656ZM13.8715 40.782L24.1347 46.5768L34.3999 40.782L24.1347 34.9872L13.8715 40.782Z" fill="black"/>' +
+    '<path d="M12.0218 40.7831V57.7977L24.136 64.6363V56.4299V47.6218L12.0218 40.7831Z" fill="black"/>' +
+    '<path d="M23.2278 48.1519L12.9306 42.3392V57.2666L23.2278 63.0794V48.1519ZM25.0456 64.6354C25.0456 64.9585 24.8731 65.2575 24.5941 65.4205C24.3151 65.5833 23.9707 65.5871 23.6893 65.4284L11.5743 58.589C11.2892 58.4277 11.113 58.1256 11.1129 57.7979V40.7831C11.1129 40.4599 11.2852 40.1611 11.5643 39.9981C11.8434 39.8355 12.188 39.8333 12.4692 39.9921L24.5821 46.8296C24.8677 46.9908 25.0456 47.2947 25.0456 47.6226V64.6354Z" fill="black"/>' +
+    '<path d="M36.2501 40.7831V57.7977L24.1359 64.6363V56.4299V47.6218L36.2501 40.7831Z" fill="white"/>' +
+    '<path d="M35.8034 39.9921C36.0848 39.8332 36.4291 39.8352 36.7082 39.9981C36.9874 40.1611 37.1597 40.4599 37.1597 40.7831V57.7979C37.1596 58.1258 36.9817 58.4278 36.6962 58.589L24.5833 65.4285C24.3019 65.5873 23.9575 65.5833 23.6784 65.4205C23.3993 65.2575 23.227 64.9587 23.227 64.6354V47.6226C23.227 47.2948 23.403 46.9908 23.6884 46.8296L35.8034 39.9921ZM25.0447 63.0774L35.3419 57.2666V42.3372L25.0447 48.152V63.0774Z" fill="black"/>' +
+    '<path d="M48.3642 47.6218L36.25 40.7832L48.3642 33.9445L60.4784 40.7832L48.3642 47.6218Z" fill="white"/>' +
+    '<path d="M48.1352 33.0656C48.3605 33.0069 48.6024 33.0362 48.8104 33.1535L60.9253 39.991C61.2109 40.1522 61.3867 40.4561 61.3867 40.784C61.3864 41.1116 61.2106 41.4139 60.9253 41.575L48.8104 48.4125C48.533 48.569 48.1948 48.5691 47.9175 48.4125L35.8026 41.575C35.5174 41.4139 35.3414 41.1115 35.3411 40.784C35.3411 40.4561 35.5171 40.1522 35.8026 39.991L47.9175 33.1535L48.1352 33.0656ZM38.0997 40.782L48.3629 46.5768L58.6282 40.782L48.3629 34.9872L38.0997 40.782Z" fill="black"/>' +
+    '<path d="M36.25 40.7831V57.7977L48.3642 64.6363V56.4299V47.6218L36.25 40.7831Z" fill="black"/>' +
+    '<path d="M47.456 48.1519L37.1588 42.3392V57.2666L47.456 63.0794V48.1519ZM49.2738 64.6354C49.2738 64.9585 49.1013 65.2575 48.8223 65.4205C48.5433 65.5833 48.1989 65.5871 47.9175 65.4284L35.8025 58.589C35.5174 58.4277 35.3412 58.1256 35.3411 57.7979V40.7831C35.3411 40.4599 35.5134 40.1611 35.7925 39.9981C36.0716 39.8355 36.4162 39.8333 36.6974 39.9921L48.8103 46.8296C49.0959 46.9908 49.2738 47.2947 49.2738 47.6226V64.6354Z" fill="black"/>' +
+    '<path d="M60.4784 40.7831V57.7977L48.3642 64.6363V56.4299V47.6218L60.4784 40.7831Z" fill="white"/>' +
+    '<path d="M60.0317 39.9921C60.3131 39.8332 60.6575 39.8352 60.9366 39.9981C61.2157 40.1611 61.388 40.4599 61.388 40.7831V57.7979C61.3879 58.1258 61.2101 58.4278 60.9246 58.589L48.8117 65.4285C48.5303 65.5873 48.1859 65.5833 47.9068 65.4205C47.6277 65.2575 47.4554 64.9587 47.4554 64.6354V47.6226C47.4554 47.2948 47.6313 46.9908 47.9168 46.8296L60.0317 39.9921ZM49.2731 63.0774L59.5703 57.2666V42.3372L49.2731 48.152V63.0774Z" fill="black"/>' +
+    '<path d="M35.9375 40.0909C44.9748 40.0909 52.3011 32.7647 52.3011 23.7273C52.3011 14.6899 44.9748 7.36365 35.9375 7.36365C26.9001 7.36365 19.5738 14.6899 19.5738 23.7273C19.5738 32.7647 26.9001 40.0909 35.9375 40.0909Z" fill="white"/>' +
+    '<path d="M51.3922 23.7273C51.3922 15.192 44.4728 8.27251 35.9374 8.27251C27.4021 8.27251 20.4827 15.192 20.4827 23.7273C20.4827 32.2626 27.4021 39.182 35.9374 39.182C44.4728 39.182 51.3922 32.2626 51.3922 23.7273ZM53.2099 23.7273C53.2099 33.2667 45.4769 40.9998 35.9374 40.9998C26.398 40.9998 18.6649 33.2667 18.6649 23.7273C18.6649 14.1878 26.398 6.45477 35.9374 6.45477C45.4769 6.45477 53.2099 14.1878 53.2099 23.7273Z" fill="black"/>' +
+    '<path d="M25.3011 23.1818H31.8465V29.7273H25.3011V23.1818Z" fill="black"/>' +
+    '<path d="M27.3465 25.2273H29.8011V29.7273H27.3465V25.2273Z" fill="white"/>' +
+    '<path d="M40.0284 23.1818H46.5738V29.7273H40.0284V23.1818Z" fill="black"/>' +
+    '<path d="M42.0738 25.2273H44.5284V29.7273H42.0738V25.2273Z" fill="white"/>' +
+    '</svg>';
+
+  function avatar() { var a = el("div", "av"); a.innerHTML = LOGO; return a; }
+
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* --- messages are queued so each one finishes writing before the next starts --- */
+  var queue = [], playing = false;
+
+  function bot(build) { queue.push({ k: "b", build: build }); if (!playing) drain(); }
+  function say(text) { bot(function (b) { b.appendChild(el("p", null, text)); }); }
+  function block(build, hold) { queue.push({ k: "n", build: build, hold: hold || 260 }); if (!playing) drain(); }
+
+  function drain() {
+    if (!queue.length) { playing = false; composer.classList.remove("busy"); return; }
+    playing = true; composer.classList.add("busy");
+    var item = queue.shift();
+
+    if (item.k === "n") {
+      var node = item.build();
+      // options carry their own staggered entrance; anything else fades in whole
+      var staggered = node.classList.contains("chips");
+      if (!staggered) node.classList.add("rise");
+      streamIn.appendChild(node);
+      scroll();
+      if (!staggered) requestAnimationFrame(function () { node.classList.remove("rise"); });
+      setTimeout(drain, item.hold);
+      return;
+    }
+
+    var build = item.build;
+    var row = el("div", "row"); var av = avatar(); var b = el("div", "bubble");
+    row.appendChild(av); row.appendChild(b);
+    streamIn.appendChild(row);
+    build(b);
+    scroll();
+    av.classList.add("typing");
+    typeBubble(b, function () {
+      av.classList.remove("typing");
+      setTimeout(drain, 170);
+    });
+  }
+
+  function typeBubble(b, done) {
+    var kids = Array.prototype.slice.call(b.children);
+    var jobs = [];
+    // Every paragraph is split into shown / cursor / hidden-rest up front, so
+    // the bubble is at its final height before a single character prints —
+    // nothing below it ever shifts while the text arrives.
+    kids.forEach(function (k) {
+      if (k.tagName === "P") {
+        var txt = k.textContent;
+        var shown = el("span");
+        var cur = el("span", "tw-cur");
+        var rest = el("span", "tw-rest", txt);
+        k.textContent = "";
+        k.appendChild(shown); k.appendChild(cur); k.appendChild(rest);
+        jobs.push({ el: k, txt: txt, shown: shown, cur: cur, rest: rest });
+      } else {
+        k.classList.add("rise");
+      }
+    });
+
+    if (REDUCED) {
+      jobs.forEach(function (j) { j.el.textContent = j.txt; });
+      kids.forEach(function (k) { k.classList.remove("rise"); });
+      done(); return;
+    }
+
+    // Steady characters-per-second, driven off the frame clock rather than a
+    // fixed chunk size — the same rate on any machine, like output arriving
+    // over a connection.
+    var CPS = 165;
+
+    function printLine(j, after) {
+      var txt = j.txt, n = -1, t0 = null;
+      function frame(ts) {
+        if (t0 === null) t0 = ts;
+        var target = Math.min(txt.length, Math.floor((ts - t0) / 1000 * CPS));
+        if (target !== n) {
+          n = target;
+          j.shown.textContent = txt.slice(0, n);
+          j.cur.textContent = n < txt.length ? txt.charAt(n) : "";
+          j.rest.textContent = txt.slice(n + 1);
+        }
+        if (n < txt.length) requestAnimationFrame(frame);
+        else { j.el.textContent = txt; after(); }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    var i = 0;
+    function nextLine() {
+      if (i >= jobs.length) { revealRest(); return; }
+      printLine(jobs[i++], function () { setTimeout(nextLine, 110); });
+    }
+
+    function revealRest() {
+      var rest = kids.filter(function (k) { return k.tagName !== "P"; });
+      rest.forEach(function (k, idx) {
+        setTimeout(function () { k.classList.remove("rise"); scroll(); }, idx * 70);
+      });
+      setTimeout(done, rest.length * 70 + 140);
+    }
+
+    nextLine();
+  }
+
+  function thinking() {
+    composer.classList.add("busy");
+    var row = el("div", "row"); var av = avatar(); av.classList.add("typing");
+    var b = el("div", "bubble");
+    var d = el("div", "dots");
+    d.appendChild(el("i")); d.appendChild(el("i")); d.appendChild(el("i"));
+    b.appendChild(d);
+    row.appendChild(av); row.appendChild(b);
+    streamIn.appendChild(row); scroll();
+    return row;
+  }
+
+  function me(text) {
+    var row = el("div", "row me"); var b = el("div", "bubble");
+    b.appendChild(el("p", null, text));
+    row.appendChild(b);
+    row.appendChild(el("div", "av you", "You"));
+    streamIn.appendChild(row); scroll();
+  }
+  function receipt(b, ms, what) {
+    var r = el("div", "receipt");
+    r.appendChild(el("span", "pulse"));
+    r.appendChild(el("span", null, "via llmapi.ai · " + what + " · " + ms + "ms"));
+    b.appendChild(r);
+  }
+  function card(b, tone, title, detail) {
+    var c = el("div", "card" + (tone ? " " + tone : ""));
+    c.appendChild(el("div", "t", title));
+    if (detail) c.appendChild(el("div", "d", detail));
+    b.appendChild(c);
+    return c;
+  }
+
+  /* ---------------- composer ---------------- */
+
+  var isMulti = false;
+  var typedAsChip = false;
+
+  function chipEl(it, pressed, multi, onPick) {
+    var c = el("button", "chip" + (it.free ? " free" : "") + (multi ? "" : " one"));
+    // a typed answer can still be the answer even on a multi-select step
+    c.type = "button";
+    if (multi) {
+      var bx = el("span", "box");
+      bx.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"'
+        + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        + '<path d="M20 6 9 17l-5-5"/></svg>';
+      c.appendChild(bx);
+    }
+    if (it.icon) { var ic = el("span", "ic"); ic.innerHTML = it.icon; c.appendChild(ic); }
+    else if (it.em) c.appendChild(el("span", "em", it.em));
+    var lb = el("span", "label", it.label);
+    // the examples live under the label, so the option reads at a glance and
+    // nobody has to know what "Cline" is before ticking
+    if (it.sub) lb.appendChild(el("span", "sub", it.sub));
+    c.appendChild(lb);
+    if (!multi) {
+      var rd = el("span", "radio");
+      rd.appendChild(document.createElement("i"));
+      c.appendChild(rd);
+    }
+    c.setAttribute("aria-pressed", pressed ? "true" : "false");
+    c.addEventListener("click", function () {
+      if (!multi) {
+        picked = [it];
+        var host = c.parentNode;
+        Array.prototype.forEach.call(host.children, function (x) { x.setAttribute("aria-pressed", "false"); });
+        c.setAttribute("aria-pressed", "true");
+        send.disabled = false;
+        return;
+      }
+      var was = c.getAttribute("aria-pressed") === "true";
+      c.setAttribute("aria-pressed", was ? "false" : "true");
+      if (was) picked = picked.filter(function (x) { return x.v !== it.v; });
+      else picked.push(it);
+      // a typed chip that is unticked has served its purpose
+      if (was && it.free) { c.remove(); }
+      send.disabled = picked.length === 0;
+    });
+    return c;
+  }
+
+  function setChips(items, multi, preselected, onPick, oneCol, cols) {
+    picked = [];
+    isMulti = !!multi;
+    typedAsChip = !!multi;
+    chipsEl = null;
+    if (!items || !items.length) return;
+    (items || []).forEach(function (it) {
+      if (multi && preselected && preselected.indexOf(it.v) > -1) picked.push(it);
+    });
+    send.disabled = multi ? picked.length === 0 : true;
+    // a single answer commits through Continue, like every other step
+    if (!multi) send.onclick = function () { if (picked.length) onPick(picked[0]); };
+    // queued, so the options land after the question has finished writing
+    block(function () {
+      var cls = cols ? "chips rowfix" : "chips" + (multi && !oneCol ? "" : " one");
+      var host = el("div", cls);
+      if (cols) host.style.setProperty("--cols", cols);
+      chipsEl = host;
+      items.forEach(function (it, i) {
+        var on = multi && picked.some(function (x) { return x.v === it.v; });
+        var c = chipEl(it, on, multi, onPick);
+        if (oneCol) c.classList.add("one");
+        c.style.setProperty("--i", i);
+        host.appendChild(c);
+      });
+      return host;
+    }, items.length * 55 + 300);
+  }
+
+  // Anything they type becomes a ticked chip alongside the offered ones, so the
+  // free answer travels the same path as a tapped one.
+  function addTyped(label) {
+    var it = { v: "free:" + label.toLowerCase(), label: label, free: true };
+    if (picked.some(function (x) { return x.v === it.v; })) return;
+    picked.push(it);
+    if (chipsEl) chipsEl.appendChild(chipEl(it, true, true, null));
+    send.disabled = false;
+  }
+
+  function mode(kind, placeholder) {
+    // kind: "none" | "confirm" | "both"
+    inputrow.hidden = kind === "none";
+    box.hidden = kind !== "both";
+    if (kind === "both") {
+      box.value = "";
+      if (!isMulti) send.disabled = true;
+      box.placeholder = placeholder || "Something else? Type it and press Enter.";
+      box.style.height = "44px";
+    }
+    send.textContent = "Continue";
+  }
+
+  // Per-step skip: never silent — every skip states the default it fell back to.
+  var stepSkip = null;
+  function setSkip(fn, label) {
+    stepSkip = fn || null;
+    skipBtn.hidden = !fn;
+    if (fn) skipBtn.textContent = label || "Skip this step";
+  }
+
+  /* ---------------- classification ---------------- */
+
+  var PROMPT =
+    "Classify one sentence from a developer signing up to an LLM gateway.\n" +
+    "Reply with ONLY a JSON object with exactly these fields:\n" +
+    '{"mode":"solo"|"team"|"org","building":string,"vertical":string|null,' +
+    '"modalities":string[],"routes":string[],"role":string|null}\n' +
+    'modalities from: chat, coding, imagevid, extract, research, speech. ' +
+    '"extract" = reading images or documents; "research" = needs the live web; ' +
+    '"imagevid" = generating pictures or video. Always include "chat" unless clearly media-only.\n' +
+    'routes = where their API calls go TODAY, from: openai, anthropic, azure, bedrock, google, openrouter, local. Empty array if not stated.\n' +
+    'mode: solo for one person, team for 2-20, org for a company or governance needs.\n' +
+    '"building" is at most 6 words, English, naming the thing.\n' +
+    '"role" is their own part in it, at most 3 words ("solo founder", "backend engineer", "CTO"), null if not stated.\n\nSentence:\n';
+
+  function guess(text) {
+    var t = text.toLowerCase();
+    var m = /\b(we|our|us|team|company)\b/.test(t) ? "team" : "solo";
+    if (/\borg|organi[sz]ation|compliance|security team|several teams\b/.test(t)) m = "org";
+    var mods = ["chat"];
+    if (/vision|image.*understand|ocr|screenshot|photo|invoice|receipt|pdf/.test(t)) mods.push("extract");
+    if (/speech|voice|tts|stt|audio|read aloud/.test(t)) mods.push("speech");
+    if (/generate image|illustration|\bart\b|video/.test(t)) mods.push("imagevid");
+    if (/search|browse|\bweb\b|research|up.to.date/.test(t)) mods.push("research");
+    if (/\bcod(e|ing)\b|programm|repo|refactor|pull request/.test(t)) mods.push("coding");
+    var rs = [];
+    if (/openrouter/.test(t)) rs.push("openrouter");
+    if (/bedrock/.test(t)) rs.push("bedrock");
+    if (/azure/.test(t)) rs.push("azure");
+    if (/vertex|ai studio|gemini/.test(t)) rs.push("google");
+    if (/ollama|llama\.cpp|self-host|locally/.test(t)) rs.push("local");
+    if (/openai|gpt/.test(t) && rs.indexOf("azure") < 0) rs.push("openai");
+    if (/anthropic|claude/.test(t) && rs.indexOf("bedrock") < 0) rs.push("anthropic");
+    return { mode: m, building: text.trim().split(/\s+/).slice(0, 6).join(" "), modalities: mods, routes: rs };
+  }
+
+  // Unused while the hero has no free-text entry. One input and one call
+  // bring the whole inference path back.
+  async function classify(text) {
+    if (!sampleFn) return { d: guess(text), ms: 0, real: false };
+    var t0 = Date.now();
+    try {
+      var d = await sampleFn.json(PROMPT + text, { modelTier: "quick", cache: false });
+      return { d: d, ms: Date.now() - t0, real: true };
+    } catch (e) { return { d: guess(text), ms: Date.now() - t0, real: false }; }
+  }
+
+  // The local fallback answers instantly — too fast for the "thinking" avatar
+  // to ever be seen spinning. Floor every wait at this, so the icon always gets
+  // a beat on screen, real classifier or not.
+  function minDelay(promise, ms) {
+    var wait = new Promise(function (resolve) { setTimeout(resolve, ms); });
+    return Promise.all([promise, wait]).then(function (r) { return r[0]; });
+  }
+
+  /* ---------------- steps ---------------- */
+
+  function go(id) {
+    stepId = id;
+    setSkip(null);
+    box.oninput = null;
+    Array.prototype.forEach.call(streamIn.querySelectorAll(".chips"), function (n) { n.remove(); });
+    STEPS[id]();
+  }
+
+  var STEPS = {};
+
+  /* --- the hero hands off to the chat --- */
+
+  var hero = document.getElementById("hero");
+  var app = document.querySelector(".app");
+
+  function openChat(echo, d, res) {
+    hero.classList.add("out");
+    setTimeout(function () {
+      hero.hidden = true;
+      app.hidden = false;
+      afterClassify(d, res);
+    }, 380);
+  }
+
+  function afterClassify(d, res) {
+    // Two cards, so two branches: alone, or with anyone else at all. A second
+    // person is what makes a project and a grant necessary — nothing between.
+    S.branch = d.mode === "solo" ? "solo" : "org";
+    S.mode = d.modeLabel || { solo: "Just me", team: "A few of us", org: "A whole organization" }[d.mode] || "Just me";
+    if (d.building) S.building = d.building;
+    S._mods = (d.modalities && d.modalities.length ? d.modalities : ["chat"]);
+    S._routes = d.routes || [];
+    renderFacts(S.building ? "building" : "mode");
+
+    bot(function (b) {
+      if (S.building) b.appendChild(el("p", null, "Got it — " + S.building + "."));
+      // Branch-specific welcome: what this is for, and what it will cost them.
+      b.appendChild(el("p", null, S.branch === "org"
+        ? "Welcome. I am here to help you quickly set up your organization."
+        : "Welcome. I am here to help you pick the best model to try our API on."));
+      if (res) receipt(b, res.ms, res.real ? "classifier · quick" : "local fallback");
+    });
+    say(S.branch === "org"
+      ? "A couple of quick ones, and you\u2019re set."
+      : "Three short questions, and I can do that.");
+
+    // The task comes first: it is the one answer the model recommendation
+    // actually turns on, so it opens the flow rather than following the plumbing.
+    // (Team accounts skip straight past it \u2014 see STEPS.needs.)
+    go("needs");
+  }
+
+  /* --- both branches --- */
+
+  // Where the key ends up, not what they are building. This is the only question
+  // here we can pay back in the same session: it orders the paste dialog at the
+  // end of the flow.
+  // The fork developers themselves reach for on a call: "for coding, or for
+  // the API" — not a flat list of three equal ways in. Coding tools and
+  // agents both write code FOR you; calling the API directly is a different
+  // track, and that's the only one where "prototype vs already live" means
+  // anything.
+  var INTRO_TRACK = [
+    { v: "coding", label: "For coding", sub: "an assistant or tool that writes code for you" },
+    { v: "api",    label: "For my API", sub: "calling LLM API directly inside your product" }
+  ];
+
+  // Claude Code is off this list on purpose: it speaks the Anthropic shape,
+  // not the OpenAI-compatible one every tab in the setup dialog hands over.
+  var SEEDS_CODING = [
+    { v: "tool",  label: "A coding tool", sub: "Cursor, Cline, Continue" },
+    { v: "agent", label: "Agent",         sub: "Hermes, OpenClaw, etc" }
+  ];
+
+  var MATURITY = [
+    { v: "explore", label: "Just exploring", sub: "prototype, my own testing" },
+    { v: "live",    label: "Already live",   sub: "real users, real data" }
+  ];
+
+  // Team accounts run role \u2192 org name \u2192 team size \u2192 concerns \u2192 plugging in;
+  // solo keeps needs \u2192 intro \u2192 role \u2192 model.
+  function nextAfterNeeds() { go(S.branch === "org" ? "role" : "intro"); }
+  function nextAfterIntro() {
+    if (S.branch === "org") {
+      say("Hold on a second \u2014 I'm setting up your organization.");
+      block(function () {
+        var wrap = el("div", "miniloader");
+        wrap.appendChild(el("div", "miniloader-ring"));
+        var num = el("div", "miniloader-num", "3");
+        wrap.appendChild(num);
+        var left = 3;
+        var t = setInterval(function () {
+          left -= 1;
+          if (left <= 0) { clearInterval(t); wrap.remove(); return; }
+          num.textContent = String(left);
+        }, 1000);
+        return wrap;
+      }, 3000);
+      go("orgDone");
+      return;
+    }
+    go("role");
+  }
+  function nextAfterRole() { go(S.branch === "org" ? "orgName" : "model"); }
+
+  var ROLES = [
+    ["dev", "Developer"],
+    ["lead", "Engineering lead"],
+    ["founder", "Founder / CTO"],
+    ["ml", "ML / AI engineer"],
+    ["product", "Product / Ops"]
+  ].map(function (x) { return { v: x[0], label: x[1] }; });
+
+  // One line whatever the role: it hands off to the last thing we need rather
+  // than commenting on who they are.
+
+  // A role already named in their own sentence does not get asked again.
+  function roleFromText(t) {
+    t = (t || "").toLowerCase();
+    if (!t) return null;
+    if (/founder|cto|ceo|owner/.test(t)) return "founder";
+    if (/lead|head of|vp |manager|principal/.test(t)) return "lead";
+    if (/\bml\b|machine learning|ai engineer|data scien/.test(t)) return "ml";
+    if (/product|ops|devops|\bpm\b/.test(t)) return "product";
+    if (/engineer|developer|backend|frontend|full.?stack|\bdev\b/.test(t)) return "dev";
+    return null;
+  }
+
+  STEPS.role = function () {
+    var known = roleFromText(S.role);
+    if (known) {
+      S.roleKey = known;
+      nextAfterRole();
+      return;
+    }
+    say("And what is your role?");
+    setChips(ROLES, false, null, function (it) {
+      me(it.label);
+      S.role = it.label;
+      S.roleKey = it.v;
+      renderFacts("role");
+      nextAfterRole();
+    }, false, 2);
+    typedAsChip = false;
+    mode("both", "Or just tell me \u2014 \u201cI run growth at a 10-person startup\u201d");
+    hint.textContent = "Pick one, or type it and I will continue with that.";
+
+    // Typing is an answer too, so it clears whichever chip was tapped \u2014
+    // last action wins, same rule the model step uses.
+    box.oninput = function () {
+      if (box.value.trim() && chipsEl) {
+        Array.prototype.forEach.call(chipsEl.children, function (x) {
+          x.setAttribute("aria-pressed", "false");
+        });
+        picked = [];
+      }
+      send.disabled = box.value.trim().length === 0 && picked.length === 0;
+    };
+
+    send.onclick = function () {
+      if (picked.length) {
+        me(picked[0].label);
+        S.role = picked[0].label;
+        S.roleKey = picked[0].v;
+        renderFacts("role");
+        nextAfterRole();
+        return;
+      }
+      var text = box.value.trim();
+      if (!text) return;
+      me(text);
+      box.value = "";
+      S.role = text;
+      S.roleKey = roleFromText(text) || "other";
+      renderFacts("role");
+      nextAfterRole();
+    };
+
+    setSkip(function () {
+      me("Skipped");
+      say("Then I will assume you are the one writing the code.");
+      S.roleKey = "dev";
+      nextAfterRole();
+    });
+  };
+
+
+  STEPS.intro = function () {
+    say("Is this for coding, or for your API?");
+    // Single-select on purpose: developers themselves describe this as a
+    // fork, not a checklist \u2014 "for coding" (an assistant writes code for
+    // you) vs "for the API" (you call it directly). Only the second branch
+    // ever asks about prototype vs already-live, so keeping them separate
+    // is what makes that question answerable at all.
+    setChips(INTRO_TRACK, false, null, null, true);
+    typedAsChip = false;   // a typed sentence goes to the classifier, not into a chip
+    mode("both", "Or describe your setup \u2014 \u201cZed, and an n8n agent on top\u201d");
+    hint.textContent = "Pick the one that fits best.";
+
+    setSkip(function () {
+      me("Skipped");
+      say("No matter \u2014 you will get all three ways in at the end anyway.");
+      nextAfterIntro();
+    });
+
+    send.onclick = async function () {
+      if (picked.length) {
+        me(picked[0].label);
+        S.introTrack = picked[0].v;
+        go(picked[0].v === "coding" ? "introCoding" : "introApi");
+        return;
+      }
+
+      var text = box.value.trim();
+      if (!text) return;
+      me(text);
+      box.value = "";
+      setChips([], false); mode("none"); setSkip(null);
+      var t = thinking();
+      var res = await minDelay(classify(text), 650);
+      t.remove();
+      var d = res.d || {};
+      S.building = d.building || text.slice(0, 44);
+      var guessedRole = !S.role && d.role ? d.role : null;
+      if (guessedRole) S.role = guessedRole;
+      if (d.routes && d.routes.length) S._routes = d.routes;
+      renderFacts("building");
+      bot(function (b) {
+        var line = "Got it \u2014 " + S.building + ".";
+        if (guessedRole) line += " And you are the " + guessedRole + " on it.";
+        b.appendChild(el("p", null, line));
+        receipt(b, res.ms, res.real ? "classifier \u00b7 quick" : "local fallback");
+      });
+      nextAfterIntro();
+    };
+  };
+
+  // --- "for coding" branch: which tool actually writes it ---
+  STEPS.introCoding = function () {
+    say("Which one?");
+    // Multi-select: using Cursor and also running an agent on top is one
+    // person, not two \u2014 forcing a single pick would throw the second
+    // answer away.
+    setChips(SEEDS_CODING, true, null);
+    mode("confirm");
+    hint.textContent = "Tick everything that fits.";
+
+    setSkip(function () {
+      me("Skipped");
+      nextAfterIntro();
+    });
+
+    send.onclick = function () {
+      var labels = picked.map(function (x) { return x.label; });
+      me(labels.join(" \u00b7 "));
+      S.building = labels.join(", ");
+      S._seeds = picked.map(function (x) { return x.v; });
+      renderFacts("building");
+      nextAfterIntro();
+    };
+  };
+
+  // --- "for your API" branch: the only place prototype vs live means
+  // anything, because it's the only track where the call actually ships
+  // inside your own product. ---
+  STEPS.introApi = function () {
+    S._seeds = ["code"];
+
+    say("Just exploring, or already live?");
+    setChips(MATURITY, false, null, null, true);
+    mode("confirm");
+    hint.textContent = "Pick one.";
+
+    setSkip(function () {
+      me("Skipped");
+      S.maturity = "Just exploring";
+      S.building = "Prototype, calling the API directly";
+      renderFacts("maturity");
+      nextAfterIntro();
+    });
+
+    send.onclick = function () {
+      if (!picked.length) return;
+      me(picked[0].label);
+      S.maturity = picked[0].label;
+      S.building = (picked[0].v === "live" ? "Live product" : "Prototype") + ", calling the API directly";
+      renderFacts("maturity");
+      nextAfterIntro();
+    };
+  };
+
+  /* --- solo --- */
+
+  STEPS.needs = function () {
+    // Team accounts skip this one \u2014 the answer only ever feeds the solo
+    // branch's model recommendation, so asking it here would be collected
+    // and then never read again.
+    if (S.branch === "org") { nextAfterNeeds(); return; }
+    say("What do you need the API for?");
+    setChips(MODALITIES, true, null);
+    say("Every box you leave unticked is a model I will not show you. Tick generously.");
+    mode("both", "Something else? e.g. embeddings, re-ranking, translation");
+    hint.textContent = "Tick what fits, or type what is missing.";
+    setSkip(function () {
+      me("Skipped");
+      S.needs = "Chat & Reasoning (assumed)";
+      S._mods = ["chat"];
+      renderFacts("needs");
+      bot(function (b) {
+        card(b, null, "Chat and reasoning, then",
+          "Safest guess, and it covers most first projects. Widen it later and the rest of the catalogue comes back.");
+      });
+      nextAfterNeeds();
+    });
+    send.onclick = function () {
+      var labels = picked.map(function (p) { return p.label; });
+      me(labels.join(" \u00b7 "));
+      S.needs = labels.length > 2 ? labels.length + " capabilities" : labels.join(", ");
+      S._mods = picked.map(function (p) { return p.v; });
+      renderFacts("needs");
+      nextAfterNeeds();
+    };
+  };
+
+  // What each route actually costs to move off — stated per route, never generically.
+  var MIGRATION = {
+    openrouter: ["jade", "You're already on a gateway",
+      "So you already know the shape. base_url is the only line that moves. GPT on Azure here, Claude on Bedrock."],
+    openai: ["jade", "The OpenAI SDK keeps working",
+      "Change base_url. That is the migration. Same client, same request shape — and the same GPT models, sitting on Azure here."],
+    anthropic: ["jade", "We speak the Anthropic API too",
+      "Point the SDK at our base URL and it keeps working. Same Claude models, on Bedrock here."],
+    azure: ["jade", "Same host, one less contract",
+      "Your models already run on Azure — here they come without a separate Azure commitment, alongside Bedrock and Google on one key."],
+    bedrock: [null, "You already have the cloud contract",
+      "Here it's one endpoint across Bedrock, Azure and Google, instead of a per-cloud integration each time you add a model."],
+    google: [null, "You already have the cloud contract",
+      "Here it's one endpoint across Google, Azure and Bedrock, instead of a per-cloud integration each time you add a model."],
+    local: [null, "Keep local as your default",
+      "Local stays first; we catch the requests it can't serve, so you don't have to size hardware for the peak."],
+    none: ["jade", "Then you start at the catalogue, not at a signup form",
+      "No provider accounts, no separate billing. Pick a model below and it runs."]
+  };
+
+  // Two ways to a model: let us choose one that the welcome credits can spend,
+  // or name the one you already want and top up for it.
+  function matchModel(text) {
+    var t = text.toLowerCase();
+    var hit = null;
+    MODELS.forEach(function (m) {
+      if (hit) return;
+      if (t.indexOf(m.id.toLowerCase()) > -1) hit = m;
+      else if (NICE[m.id] && t.indexOf(NICE[m.id].toLowerCase()) > -1) hit = m;
+    });
+    return hit;
+  }
+
+
+  var HOSTS = ["bedrock", "azure", "google"];
+
+  function needsCaps(mods) {
+    var want = [];
+    if (mods.indexOf("extract") > -1) want.push("vision");
+    if (mods.indexOf("research") > -1) want.push("search");
+    return want;
+  }
+
+  // The host they already call comes first — that's what the route answer buys.
+  function myHosts() {
+    return (S._routes || []).map(function (r) { return ROUTE_HOST[r]; }).filter(Boolean);
+  }
+  var PAIR = 2;   // two per group: one model is not a choice, four is a table
+
+  function cost(m) { return 0.75 * m.in + 0.25 * m.out; }
+
+  function fits(m, tier, want) {
+    return m.tier === tier && want.every(function (c) { return m.caps.indexOf(c) > -1; });
+  }
+
+  // One per host before a second from any host, so a pair is a real choice
+  // rather than the same route twice. The host they already call sorts first —
+  // that is what the route answer buys them.
+  function spread(pool, n) {
+    var mine = myHosts();
+    var sorted = pool.slice().sort(function (a, b2) {
+      var pa = mine.indexOf(a.host) > -1 ? 0 : 1;
+      var pb = mine.indexOf(b2.host) > -1 ? 0 : 1;
+      return pa - pb || cost(a) - cost(b2);
+    });
+    var out = [], seen = {};
+    sorted.forEach(function (m) {
+      if (!seen[m.host] && out.length < n) { seen[m.host] = 1; out.push(m); }
+    });
+    sorted.forEach(function (m) {
+      if (out.indexOf(m) < 0 && out.length < n) out.push(m);
+    });
+    return out;
+  }
+
+  // Two separate questions, answered separately: what the $10 can run today,
+  // and what this workload actually wants. Mixing them into one list is what
+  // forced the old apology in the small print.
+  function pickFree(want) {
+    return spread(MODELS.filter(function (m) { return fits(m, "starter", want) && freeTier(m); }), PAIR);
+  }
+  function pickBest(want) {
+    return spread(MODELS.filter(function (m) { return fits(m, "premium", want); }), PAIR);
+  }
+
+  // Friendly name first, exact id underneath: the id is a table stake for the
+  // person pasting it, the name is what everyone else recognises.
+  var NICE = {
+    "nova-2-lite": "Amazon Nova Lite",
+    "nova-lite": "Amazon Nova Lite",
+    "gpt-5-nano": "GPT-5 nano",
+    "gemini-2.5-flash-lite": "Gemini 2.5 Flash Lite",
+    "gpt-5.1": "GPT-5.1",
+    "claude-sonnet-5": "Claude Sonnet 5",
+    "gemini-3.1-pro-preview": "Gemini 3.1 Pro",
+    "gemini-3.1-flash-lite": "Gemini 3.1 Flash Lite",
+    "deepseek-v4-flash": "DeepSeek V4 Flash",
+    "kimi-k2.6": "Kimi K2.6"
+  };
+
+  // Vendor marks, lifted verbatim from provider-icons.tsx. The three routes
+  // already reuse ROUTE_ICON; these fill the gaps it has no entry for.
+  var VENDOR_ICON = {
+    openai: ROUTE_ICON.openai,
+    anthropic: ROUTE_ICON.anthropic,
+    google: ROUTE_ICON.google,
+    amazon: "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595l.315-.14c.138-.06.234-.1.293-.13.226-.088.39-.046.525.13.12.174.09.336-.12.48-.256.19-.6.41-1.006.654-1.244.743-2.64 1.316-4.185 1.726a17.617 17.617 0 01-10.951-.577 17.88 17.88 0 01-5.43-3.35c-.1-.074-.151-.15-.151-.22 0-.047.021-.09.051-.13zm6.565-6.218c0-1.005.247-1.863.743-2.577.495-.71 1.17-1.25 2.04-1.615.796-.335 1.756-.575 2.912-.72.39-.046 1.033-.103 1.92-.174v-.37c0-.93-.105-1.558-.3-1.875-.302-.43-.78-.65-1.44-.65h-.182c-.48.046-.896.196-1.246.46-.35.27-.575.63-.675 1.096-.06.3-.206.465-.435.51l-2.52-.315c-.248-.06-.372-.18-.372-.39 0-.046.007-.09.022-.15.247-1.29.855-2.25 1.82-2.88.976-.616 2.1-.975 3.39-1.05h.54c1.65 0 2.957.434 3.888 1.29.135.15.27.3.405.48.12.165.224.314.283.45.075.134.15.33.195.57.06.254.105.42.135.51.03.104.062.3.076.615.01.313.02.493.02.553v5.28c0 .376.06.72.165 1.036.105.313.21.54.315.674l.51.674c.09.136.136.256.136.36 0 .12-.06.226-.18.314-1.2 1.05-1.86 1.62-1.963 1.71-.165.135-.375.15-.63.045a6.062 6.062 0 01-.526-.496l-.31-.347a9.391 9.391 0 01-.317-.42l-.3-.435c-.81.886-1.603 1.44-2.4 1.665-.494.15-1.093.227-1.83.227-1.11 0-2.04-.343-2.76-1.034-.72-.69-1.08-1.665-1.08-2.94l-.05-.076zm3.753-.438c0 .566.14 1.02.425 1.364.285.34.675.512 1.155.512.045 0 .106-.007.195-.02.09-.016.134-.023.166-.023.614-.16 1.08-.553 1.424-1.178.165-.28.285-.58.36-.91.09-.32.12-.59.135-.8.015-.195.015-.54.015-1.005v-.54c-.84 0-1.484.06-1.92.18-1.275.36-1.92 1.17-1.92 2.43l-.035-.02zm9.162 7.027c.03-.06.075-.11.132-.17.362-.243.714-.41 1.05-.5a8.094 8.094 0 011.612-.24c.14-.012.28 0 .41.03.65.06 1.05.168 1.172.33.063.09.099.228.099.39v.15c0 .51-.149 1.11-.424 1.8-.278.69-.664 1.248-1.156 1.68-.073.06-.14.09-.197.09-.03 0-.06 0-.09-.012-.09-.044-.107-.12-.064-.24.54-1.26.806-2.143.806-2.64 0-.15-.03-.27-.087-.344-.145-.166-.55-.257-1.224-.257-.243 0-.533.016-.87.046-.363.045-.7.09-1 .135-.09 0-.148-.014-.18-.044-.03-.03-.036-.047-.02-.077 0-.017.006-.03.02-.063v-.06z\"/></svg>",
+    deepseek: "<svg viewBox=\"0 0 57.86 43.38\" fill=\"rgb(77,107,254)\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"M57.26 3.65c-.61-.31-.88.27-1.24.57-.12.09-.22.22-.33.33-.89.98-1.94 1.62-3.31 1.54-1.99-.11-3.7.53-5.21 2.08-.32-1.92-1.39-3.06-3.01-3.8-.85-.38-1.7-.76-2.3-1.59-.41-.6-.53-1.26-.73-1.91-.14-.39-.27-.79-.71-.86-.48-.07-.67.34-.86.68-.75 1.41-1.05 2.96-1.02 4.52.07 3.53 1.53 6.34 4.43 8.34.33.22.42.45.31.79-.19.69-.43 1.35-.64 2.04-.13.44-.33.54-.79.35-1.59-.68-2.97-1.68-4.19-2.9-2.06-2.03-3.93-4.28-6.26-6.04-.54-.41-1.09-.79-1.66-1.15-2.37-2.35.32-4.28.94-4.51.65-.24.22-1.06-1.88-1.06-2.1.01-4.02.73-6.48 1.69-.35.14-.73.25-1.12.33-2.22-.43-4.53-.52-6.95-.25-4.54.52-8.17 2.71-10.84 6.44C.2 13.77-.55 18.88.37 24.2c.97 5.61 3.78 10.25 8.1 13.88 4.48 3.77 9.64 5.61 15.52 5.26 3.58-.21 7.56-.7 12.04-4.57 1.14.57 2.32.8 4.29.98 1.52.14 2.98-.08 4.12-.32 1.77-.38 1.65-2.05 1-2.36-5.19-2.46-4.05-1.46-5.09-2.27 2.64-3.19 6.62-6.49 8.18-17.2.12-.85.02-1.39 0-2.08-.01-.42.08-.58.55-.63 1.31-.15 2.57-.51 3.73-1.16 3.36-1.88 4.72-4.95 5.04-8.64.05-.57 0-1.15-.59-1.44ZM27.92 36.84c-5.03-4.03-7.47-5.36-8.48-5.3-.94.06-.78 1.15-.57 1.87.22.71.5 1.2.9 1.82.27.41.46 1.02-.28 1.48-1.62 1.02-4.44-.35-4.57-.41-3.28-1.97-6.02-4.57-7.96-8.13-1.86-3.42-2.95-7.09-3.13-11-.04-.95.23-1.28 1.15-1.46 1.22-.22 2.47-.27 3.69-.09 5.14.76 9.51 3.1 13.18 6.81 2.1 2.11 3.68 4.64 5.31 7.1 1.74 2.62 3.6 5.11 5.98 7.16.84.72 1.51 1.26 2.15 1.66-1.93.22-5.16.27-7.37-1.51Zm2.42-15.81c0-.42.33-.76.74-.76.1 0 .18.02.26.05.1.04.2.1.27.18.13.14.21.33.21.53 0 .42-.33.75-.75.75s-.73-.33-.73-.75Zm7.49 3.91c-.48.21-.96.38-1.42.4-.72.03-1.5-.26-1.92-.62-.66-.57-1.13-.88-1.33-1.87-.09-.42-.04-1.07.04-1.44.17-.8-.02-1.32-.58-1.79-.45-.38-1.03-.49-1.66-.49-.23 0-.45-.1-.61-.19-.27-.13-.48-.46-.28-.88.07-.13.39-.45.47-.51.85-.5 1.84-.34 2.76.04.85.35 1.49 1 2.41 1.92.95 1.11 1.12 1.41 1.65 2.24.43.65.81 1.32 1.08 2.09.16.47-.05.87-.61 1.1Z\"/></svg>",
+    moonshot: "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\"><path d=\"m1.052 16.916 9.539 2.552a21.007 21.007 0 0 0 .06 2.033l5.956 1.593a11.997 11.997 0 0 1-5.586.865l-.18-.016-.044-.004-.084-.009-.094-.01a11.605 11.605 0 0 1-.157-.02l-.107-.014-.11-.016a11.962 11.962 0 0 1-.32-.051l-.042-.008-.075-.013-.107-.02-.07-.015-.093-.019-.075-.016-.095-.02-.097-.023-.094-.022-.068-.017-.088-.022-.09-.024-.095-.025-.082-.023-.109-.03-.062-.02-.084-.025-.093-.028-.105-.034-.058-.019-.08-.026-.09-.031-.066-.024a6.293 6.293 0 0 1-.044-.015l-.068-.025-.101-.037-.057-.022-.08-.03-.087-.035-.088-.035-.079-.032-.095-.04-.063-.028-.063-.027a5.655 5.655 0 0 1-.041-.018l-.066-.03-.103-.047-.052-.024-.096-.046-.062-.03-.084-.04-.086-.044-.093-.047-.052-.027-.103-.055-.057-.03-.058-.032a6.49 6.49 0 0 1-.046-.026l-.094-.053-.06-.034-.051-.03-.072-.041-.082-.05-.093-.056-.052-.032-.084-.053-.061-.039-.079-.05-.07-.047-.053-.035a7.785 7.785 0 0 1-.054-.036l-.044-.03-.044-.03a6.066 6.066 0 0 1-.04-.028l-.057-.04-.076-.054-.069-.05-.074-.054-.056-.042-.076-.057-.076-.059-.086-.067-.045-.035-.064-.052-.074-.06-.089-.073-.046-.039-.046-.039a7.516 7.516 0 0 1-.043-.037l-.045-.04-.061-.053-.07-.062-.068-.06-.062-.058-.067-.062-.053-.05-.088-.084a13.28 13.28 0 0 1-.099-.097l-.029-.028-.041-.042-.069-.07-.05-.051-.05-.053a6.457 6.457 0 0 1-.168-.179l-.08-.088-.062-.07-.071-.08-.042-.049-.053-.062-.058-.068-.046-.056a7.175 7.175 0 0 1-.027-.033l-.045-.055-.066-.082-.041-.052-.05-.064-.02-.025a11.99 11.99 0 0 1-1.44-2.402zm-1.02-5.794 11.353 3.037a20.468 20.468 0 0 0-.469 2.011l10.817 2.894a12.076 12.076 0 0 1-1.845 2.005L.657 15.923l-.016-.046-.035-.104a11.965 11.965 0 0 1-.05-.153l-.007-.023a11.896 11.896 0 0 1-.207-.741l-.03-.126-.018-.08-.021-.097-.018-.081-.018-.09-.017-.084-.018-.094c-.026-.141-.05-.283-.071-.426l-.017-.118-.011-.083-.013-.102a12.01 12.01 0 0 1-.019-.161l-.005-.047a12.12 12.12 0 0 1-.034-2.145zm1.593-5.15 11.948 3.196c-.368.605-.705 1.231-1.01 1.875l11.295 3.022c-.142.82-.368 1.612-.668 2.365l-11.55-3.09L.124 10.26l.015-.1.008-.049.01-.067.015-.087.018-.098c.026-.148.056-.295.088-.442l.028-.124.02-.085.024-.097c.022-.09.045-.18.07-.268l.028-.102.023-.083.03-.1.025-.082.03-.096.026-.082.031-.095a11.896 11.896 0 0 1 1.01-2.232zm4.442-4.4L17.352 4.59a20.77 20.77 0 0 0-1.688 1.721l7.823 2.093c.267.852.442 1.744.513 2.665L2.106 5.213l.045-.065.027-.04.04-.055.046-.065.055-.076.054-.072.064-.086.05-.065.057-.073.055-.07.06-.074.055-.069.065-.077.054-.066.066-.077.053-.06.072-.082.053-.06.067-.074.054-.058.073-.078.058-.06.063-.067.168-.17.1-.098.059-.056.076-.071a12.084 12.084 0 0 1 2.272-1.677zM12.017 0h.097l.082.001.069.001.054.002.068.002.046.001.076.003.047.002.06.003.054.002.087.005.105.007.144.011.088.007.044.004.077.008.082.008.047.005.102.012.05.006.108.014.081.01.042.006.065.01.207.032.07.012.065.011.14.026.092.018.11.022.046.01.075.016.041.01L14.7.3l.042.01.065.015.049.012.071.017.096.024.112.03.113.03.113.032.05.015.07.02.078.024.073.023.05.016.05.016.076.025.099.033.102.036.048.017.064.023.093.034.11.041.116.045.1.04.047.02.06.024.041.018.063.026.04.018.057.025.11.048.1.046.074.035.075.036.06.028.092.046.091.045.102.052.053.028.049.026.046.024.06.033.041.022.052.029.088.05.106.06.087.051.057.034.053.032.096.059.088.055.098.062.036.024.064.041.084.056.04.027.062.042.062.043.023.017c.054.037.108.075.161.114l.083.06.065.048.056.043.086.065.082.064.04.03.05.041.086.069.079.065.085.071c.712.6 1.353 1.283 1.909 2.031L7.222.994l.062-.027.065-.028.081-.034.086-.035c.113-.045.227-.09.341-.131l.096-.035.093-.033.084-.03.096-.031c.087-.03.176-.058.264-.085l.091-.027.086-.025.102-.03.085-.023.1-.026L9.04.37l.09-.023.091-.022.095-.022.09-.02.098-.021.091-.02.095-.018.092-.018.1-.018.091-.016.098-.017.092-.014.097-.015.092-.013.102-.013.091-.012.105-.012.09-.01.105-.01c.093-.01.186-.018.28-.024l.106-.008.09-.005.11-.006.093-.004.1-.004.097-.002.099-.002.197-.002z\"/></svg>"
+  };
+
+  // Whose model it is, which is the mark people actually recognise \u2014 not the
+  // cloud it is served from. Bedrock/Azure/Vertex stay in the text line.
+  function vendorOf(m) {
+    var id = m.id || "";
+    if (/^nova/.test(id)) return "amazon";
+    if (/^gpt/.test(id)) return "openai";
+    if (/^gemini/.test(id)) return "google";
+    if (/deepseek/.test(id)) return "deepseek";
+    if (/kimi/.test(id)) return "moonshot";
+    if (/claude/.test(id)) return "anthropic";
+    return null;
+  }
+
+  function modelCard(m) {
+    var c = el("button", "mcard");
+    c.type = "button";
+    c.setAttribute("aria-pressed", "false");
+
+    var brand = el("span", "brand");
+    brand.innerHTML = VENDOR_ICON[vendorOf(m)] || "";
+    c.appendChild(brand);
+
+    var mid = el("div");
+    var nm = el("div", "nm");
+    nm.appendChild(el("span", null, NICE[m.id] || m.id));
+    // derived, not passed in: the badge states a fact about the model, so it
+    // stays true wherever the card is rendered
+    if (freeTier(m)) nm.appendChild(el("span", "tag", "Free test drive \u00b7 $10"));
+    mid.appendChild(nm);
+    c.appendChild(mid);
+
+    var rd = el("span", "radio");
+    rd.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"'
+      + ' aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>';
+    c.appendChild(rd);
+
+    c.addEventListener("click", function () {
+      Array.prototype.forEach.call(streamIn.querySelectorAll(".mcard"), function (x) {
+        x.setAttribute("aria-pressed", "false");
+      });
+      c.setAttribute("aria-pressed", "true");
+      box.value = "";
+      picked = [{ v: m.id, label: NICE[m.id] || m.id, model: m }];
+      send.disabled = false;
+    });
+    return c;
+  }
+
+  function commitOwn(text) {
+    if (!text) return;
+    me(text);
+    box.value = "";
+    mode("none"); setSkip(null);
+    var m = matchModel(text);
+    if (m) {
+      S.model = m.id; S._model = m;
+      var tier = CEILING_TIERS.find(function (t) { return t >= m.out; });
+      S.ceiling = tier ? "$" + tier + " / 1M output" : "None";
+      renderFacts("model");
+      say("Wiring up " + (NICE[m.id] || m.id) + " on " + m.label + ".");
+      if (!freeTier(m)) {
+        bot(function (b) {
+          card(b, "amber", "This one is not on the welcome credits",
+            "The free $10 spends on the test-drive models only. Your key works either way \u2014 this model starts the moment you top up.");
+        });
+      }
+    } else {
+      S.model = text;
+      S.ceiling = "$15 / 1M output";
+      renderFacts("model");
+      say("Noted \u2014 I will point the key at it.");
+      bot(function (b) {
+        card(b, "amber", "Not one of the test-drive models",
+          "The free $10 spends on our test-drive models. Top up and this one runs on the same key.");
+      });
+    }
+    go("snippet");
+  }
+
+  function commitModel(m) {
+    me(NICE[m.id] || m.id);
+    S.model = m.id; S._model = m;
+    var tier = CEILING_TIERS.find(function (t) { return t >= m.out; });
+    S.ceiling = tier ? "$" + tier + " / 1M output" : "None";
+    renderFacts("model");
+    go("snippet");
+  }
+
+  // What their answers actually demand, said back to them. "That" points at
+  // their own message, still on screen — no re-listing, no articles to get
+  // wrong. Capabilities are things it NEEDS; volume is what it WILL DO.
+  var NEED_WORD = { speech: "speech", extract: "vision", research: "live search",
+                    imagevid: "image and video generation",
+                    // code files are long — that is what coding demands of a model
+                    coding: "a long context" };
+  // A coding tool ships whole files up on every turn; an agent loops in short
+  // hops. Both are facts about the calls, which is what picks the model.
+  var NEED_SHAPE = { tool: "a long context" };
+  var WILL_SHAPE = { agent: "make a lot of short calls" };
+  // the conclusion follows the workload first, because that is the actionable one
+  var ENDINGS = [
+    ["make a lot of short calls", "so price per call matters more here than peak quality"],
+    ["run at volume", "so price per call matters more here than peak quality"],
+    ["a long context", "so how much it can hold matters more than raw speed"]
+  ];
+
+  function joinWords(list) {
+    if (list.length === 1) return list[0];
+    return list.slice(0, -1).join(", ") + " and " + list[list.length - 1];
+  }
+
+  function leadIn() {
+    var needs = [], wills = [];
+    function push(arr, w) { if (w && arr.indexOf(w) < 0) arr.push(w); }
+
+    (S._mods || []).forEach(function (m) { push(needs, NEED_WORD[m]); });
+    (S._seeds || []).forEach(function (v) { push(needs, NEED_SHAPE[v]); });
+    (S._seeds || []).forEach(function (v) { push(wills, WILL_SHAPE[v]); });
+    if (!needs.length && !wills.length) return null;
+
+    var all = needs.concat(wills);
+    var end = null;
+    ENDINGS.forEach(function (e) { if (!end && all.indexOf(e[0]) > -1) end = e[1]; });
+    if (!end) return null;   // no conclusion, no sentence
+
+    var body;
+    if (needs.length && wills.length) body = "That needs " + joinWords(needs) + ", and it will " + joinWords(wills);
+    else if (needs.length) body = "That needs " + joinWords(needs);
+    else body = "It will " + joinWords(wills);
+
+    return body + " \u2014 " + end + ".";
+  }
+
+  STEPS.model = function () {
+    var mods = S._mods || ["chat"];
+    var want = needsCaps(mods);
+    var free = pickFree(want);      // claimable on the $10, today
+    var best = pickBest(want);      // what the workload actually wants
+
+    var lead = leadIn();
+    if (lead) say(lead);
+
+    // Ticking "Image & video" or "Speech" and then being handed three text
+    // models would read as us not having listened. We cannot filter to those —
+    // the test-drive tier has none — so we say so instead of pretending.
+    var off = offTextModel(mods);
+    if (off.length) {
+      var subj = off.length === 2 ? "Image, video and speech need their own models — those wait"
+        : off[0] === "imagevid" ? "Image and video need their own models — those wait"
+        : "Speech needs its own model — it waits";
+      say(subj + " for you on Get Started. Here I am picking your text one.");
+    }
+
+    // Claimable first. It is the only group they can act on in the next minute;
+    // leading with models the $10 cannot buy shows them the good thing and then
+    // takes it away.
+    if (free.length) {
+      say(free.length === 1
+        ? "One test-drive model covers all of that, and your $10 in welcome credits run on it."
+        : "Two of our test-drive models fit, and your $10 in welcome credits run on them.");
+      block(function () {
+        var wrap = el("div", "models");
+        free.forEach(function (m) { wrap.appendChild(modelCard(m)); });
+        return wrap;
+      }, 320);
+    } else {
+      say("No test-drive model carries all of that, so the welcome credits will not reach this one.");
+    }
+
+    // The other half, said plainly rather than hidden behind an expander: what
+    // the workload actually wants, and what it costs to get there.
+    if (best.length) {
+      say("And these two fit it best of anything we route — outside the credits, "
+        + "so they start the moment you top up.");
+      block(function () {
+        var wrap = el("div", "models");
+        best.forEach(function (m) { wrap.appendChild(modelCard(m)); });
+        return wrap;
+      }, 320);
+    }
+
+    setChips([], false);
+    typedAsChip = false;
+    mode("both", "Or type your own model \u2014 \u201cclaude-sonnet-5 on Bedrock\u201d");
+    send.disabled = true;
+    hint.textContent = "Pick one, or type the model you want and I will continue with that.";
+
+    // Typing is an answer too, so it clears any card that was selected — last
+    // action wins, rather than a silent winner between the two.
+    box.oninput = function () {
+      if (box.value.trim()) {
+        Array.prototype.forEach.call(streamIn.querySelectorAll(".mcard"), function (x) {
+          x.setAttribute("aria-pressed", "false");
+        });
+        picked = [];
+      }
+      send.disabled = box.value.trim().length === 0 && picked.length === 0;
+    };
+
+    send.onclick = function () {
+      if (picked.length && picked[0].model) { commitModel(picked[0].model); return; }
+      commitOwn(box.value.trim());
+    };
+    setSkip(function () {
+      var pick = free[0] || best[0] || MODELS[0];
+      me("Skipped");
+      commitModel(pick);
+    }, "Pick one for me");
+  };
+
+  function maskKey(k) {
+    var cut = k.indexOf("-", k.indexOf("-") + 1) + 1;   // keep the sk-llmapi- prefix
+    return k.slice(0, cut + 6) + "\u2022".repeat(12);
+  }
+
+  var MODEL_ID = function () { return S.model || "gemini-2.5-flash-lite"; };
+
+  // What is rendered is not what is copied. The key on screen is dotted so the
+  // one screen people actually screenshot — "how do I set this up" — cannot leak
+  // a live key; the clipboard still gets the real thing.
+  function shown(t) { return t.split(KEY).join(maskKey(KEY)); }
+
+  // No key in here, on purpose. The agent does not need it to do the work, and
+  // a prompt without one is safe to paste into anything — nothing to log, leak
+  // or send to a third-party model. The human puts the value in .env by hand.
+  //
+  // It also ends on the diff rather than on a test request: a test request on a
+  // $0 balance comes back 402, and the agent reports the integration as broken.
+  function agentPrompt(tool) {
+    return [
+      "I have an OpenAI-compatible API key. Switch this project over to it"
+        + (tool ? ", using " + tool : "") + ".",
+      "",
+      "Base URL: " + ENDPOINT,
+      "Model:    " + MODEL_ID(),
+      "",
+      "1. Find every place this project builds an LLM client or names a model.",
+      "2. Point them at the base URL and model above.",
+      "3. Read the key from LLMAPI_API_KEY in .env — I will paste the value in",
+      "   myself. Never put it in source, and check .env is gitignored.",
+      "4. Show me the diff. Do not send any request yet."
+    ].join("\n");
+  }
+
+  // Every one of these takes the same three values — what differs is where you
+  // paste them, so the path is part of the block rather than a caption beside
+  // it. Continue keeps its settings in a file, so it gets the file.
+  var TOOLS = ["Cursor", "Cline", "Continue", "Other"];
+
+  var SECTION_ORDER = ["tool", "code", "agent"];
+  // The button says what it will produce, not that help exists.
+  var SECTION_CTA = {
+    tool: "Set my tool up",
+    code: "Generate code",
+    agent: "Write me a prompt"
+  };
+  // Step two already said where the key is going; no need to ask again here.
+  function wantedSections() {
+    var pick = (S._seeds || []).filter(function (v) { return SECTION_ORDER.indexOf(v) > -1; });
+    return pick.length ? pick : SECTION_ORDER.slice();
+  }
+
+  function connFor(tool) {
+    var rows = "Base URL   " + ENDPOINT + "\n"
+      + "API key    " + KEY + "\n"
+      + "Model      " + MODEL_ID();
+
+    if (tool === "Cursor") {
+      return "Settings → Models → OpenAI API Key,\n"
+        + "tick “Override OpenAI Base URL”.\n\n" + rows;
+    }
+    if (tool === "Cline") {
+      return "API Provider → OpenAI Compatible.\n\n" + rows;
+    }
+    if (tool === "Continue") {
+      return "~/.continue/config.yaml\n\n"
+        + "models:\n"
+        + "  - name: LLM API\n"
+        + "    provider: openai\n"
+        + "    apiBase: " + ENDPOINT + "\n"
+        + "    apiKey: " + KEY + "\n"
+        + "    model: " + MODEL_ID();
+    }
+    return "Any OpenAI-compatible client takes these three.\n\n" + rows;
+  }
+
+  function codeFor(lang) {
+    var m = MODEL_ID();
+    if (lang === "Python") {
+      return 'from openai import OpenAI\n\n'
+        + 'client = OpenAI(\n    base_url="' + ENDPOINT + '",\n    api_key="' + KEY + '",\n)\n\n'
+        + 'r = client.chat.completions.create(\n    model="' + m + '",\n'
+        + '    messages=[{"role": "user", "content": "Hello"}],\n)\n'
+        + 'print(r.choices[0].message.content)';
+    }
+    if (lang === "TypeScript") {
+      return 'import OpenAI from "openai";\n\n'
+        + 'const client = new OpenAI({\n  baseURL: "' + ENDPOINT + '",\n  apiKey: "' + KEY + '",\n});\n\n'
+        + 'const r = await client.chat.completions.create({\n  model: "' + m + '",\n'
+        + '  messages: [{ role: "user", content: "Hello" }],\n});\n'
+        + 'console.log(r.choices[0].message.content);';
+    }
+    return 'curl ' + ENDPOINT + '/chat/completions \\\n'
+      + '  -H "Authorization: Bearer ' + KEY + '" \\\n'
+      + '  -H "Content-Type: application/json" \\\n'
+      + '  -d \'{"model":"' + m + '","messages":[{"role":"user","content":"Hello"}]}\'';
+  }
+
+  function promptBox(text, label) {
+    var wrap = el("div", "promptbox");
+    wrap.appendChild(el("pre", "prompttext", text));
+    var cp = el("button", "cp", label || "Copy");
+    cp.type = "button";
+    cp.addEventListener("click", function () {
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(text).then(function () {
+        cp.textContent = "Copied"; cp.classList.add("ok");
+        setTimeout(function () { cp.textContent = label || "Copy"; cp.classList.remove("ok"); }, 1600);
+      });
+    });
+    wrap.appendChild(cp);
+    return wrap;
+  }
+
+  function credRow(into, label, value, secret) {
+    var r = el("div", "cred");
+    r.appendChild(el("div", "lbl", label));
+    // shown masked, copied whole
+    var v = el("div", "val" + (secret ? " secret" : ""), secret ? maskKey(value) : value);
+    r.appendChild(v);
+    var cp = el("button", "cp", "Copy");
+    cp.type = "button";
+    cp.addEventListener("click", function () {
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(value).then(function () {
+        cp.textContent = "Copied";
+        cp.classList.add("ok");
+        setTimeout(function () { cp.textContent = "Copy"; cp.classList.remove("ok"); }, 1600);
+      });
+    });
+    r.appendChild(cp);
+    into.appendChild(r);
+  }
+
+  STEPS.snippet = function () {
+    S.key = KEY;
+    renderFacts("key");
+    say("Good. Creating your API key now.");
+    // Warn before the key lands, not after — by then the eye has moved on.
+    say("Copy it now \u2014 it is shown once and never again. Lose it and you regenerate, which kills the old one the same second.");
+
+    block(function () {
+      var creds = el("div", "creds");
+      credRow(creds, "Endpoint", ENDPOINT, false);
+      credRow(creds, "API key", KEY, true);
+      return creds;
+    }, 300);
+
+    block(function () {
+      // The button names what it will produce. One answer back at step two
+      // means we know exactly what that is; two answers mean we do not.
+      var want = wantedSections();
+      var b = el("button", "linkbtn", want.length === 1 ? SECTION_CTA[want[0]] : "Help me use this key");
+      b.type = "button";
+      b.addEventListener("click", openSetup);
+      return b;
+    }, 260);
+
+    go("credits");
+  };
+
+
+
+  // FREE_CREDIT_MODELS in the app: the welcome bonus only spends on these — and
+  // only on the cheap tier of them. The dialog says "Gemini Flash", not Gemini,
+  // so the family alone is not enough to call a model claimable.
+  function freeTier(m) {
+    return m.tier === "starter" && ["deepseek", "kimi", "gemini"].indexOf(baseFamily(m)) > -1;
+  }
+
+  function baseFamily(m) {
+    var id = (m && m.id) || "";
+    if (id.indexOf("gemini") > -1) return "gemini";
+    if (id.indexOf("deepseek") > -1) return "deepseek";
+    if (id.indexOf("kimi") > -1) return "kimi";
+    return "other";
+  }
+
+
+  /* ---------------- setup dialog ---------------- */
+
+  var CODE_LANGS = ["Python", "TypeScript", "curl"];
+
+  // Nothing to answer. Asking "where is this key going?" would make someone
+  // classify themselves at the one moment they just want to paste — so the
+  // three destinations are laid out instead, all pre-filled. Which Copy gets
+  // pressed is the same signal the question would have bought, for free.
+  function openSetup() {
+    var ovl = el("div", "ovl");
+    var dlg = el("div", "dlg wide");
+    dlg.style.position = "relative";
+
+    var head = el("div", "sdlg-head");
+    head.appendChild(el("b", null, "Ready to paste"));
+    head.appendChild(el("span", null,
+      "The key shows as dots, so this screen is safe to share \u2014 "
+      + "Copy puts the real one on your clipboard."));
+    dlg.appendChild(head);
+
+    var body = el("div", "sdlg-body");
+
+    function wireCopy(btn, get, label) {
+      btn.addEventListener("click", function () {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(get()).then(function () {
+          btn.textContent = "Copied"; btn.classList.add("ok");
+          setTimeout(function () { btn.textContent = label; btn.classList.remove("ok"); }, 1600);
+        });
+      });
+    }
+
+    var SECTIONS = {
+      /* ---- a coding tool: the fields its settings pane asks for ---- */
+      tool: function () {
+        var h = el("div", "sdlg-row");
+        h.appendChild(el("div", "sdlg-lab", "A coding tool"));
+        var tabs = el("div", "tabs");
+        h.appendChild(tabs);
+        body.appendChild(h);
+
+        var connEl = el("pre", "prompttext");
+        var cp = el("button", "cp", "Copy settings");
+        cp.type = "button";
+
+        var conn = connFor(TOOLS[0]);
+        function paint(tool) {
+          conn = connFor(tool);
+          connEl.textContent = shown(conn);
+          Array.prototype.forEach.call(tabs.children, function (t) {
+            t.setAttribute("aria-pressed", t.textContent === tool ? "true" : "false");
+          });
+        }
+        TOOLS.forEach(function (tool) {
+          var t = el("button", "tab", tool);
+          t.type = "button";
+          t.addEventListener("click", function () { paint(tool); });
+          tabs.appendChild(t);
+        });
+        body.appendChild(connEl);
+        body.appendChild(cp);
+        paint(TOOLS[0]);
+        wireCopy(cp, function () { return conn; }, "Copy settings");
+      },
+
+      /* ---- code, with a language tab ---- */
+      code: function () {
+        var h = el("div", "sdlg-row");
+        h.appendChild(el("div", "sdlg-lab", "Your own code"));
+        var tabs = el("div", "tabs");
+        h.appendChild(tabs);
+        body.appendChild(h);
+
+        var codeEl = el("pre", "prompttext");
+        var cp = el("button", "cp", "Copy code");
+        cp.type = "button";
+
+        var code = codeFor(CODE_LANGS[0]);
+        function paint(lang) {
+          code = codeFor(lang);
+          codeEl.textContent = shown(code);
+          Array.prototype.forEach.call(tabs.children, function (t) {
+            t.setAttribute("aria-pressed", t.textContent === lang ? "true" : "false");
+          });
+        }
+        CODE_LANGS.forEach(function (lang) {
+          var t = el("button", "tab", lang);
+          t.type = "button";
+          t.addEventListener("click", function () { paint(lang); });
+          tabs.appendChild(t);
+        });
+        body.appendChild(codeEl);
+        body.appendChild(cp);
+        paint(CODE_LANGS[0]);
+        wireCopy(cp, function () { return code; }, "Copy code");
+      },
+
+      /* ---- prompt ---- */
+      agent: function () {
+        var h = el("div", "sdlg-row");
+        h.appendChild(el("div", "sdlg-lab", "Prompt for an agent"));
+        body.appendChild(h);
+        var prompt = agentPrompt(null);
+        var promptEl = el("pre", "prompttext", shown(prompt));
+        var cp = el("button", "cp", "Copy prompt");
+        cp.type = "button";
+        body.appendChild(promptEl);
+        // said out loud, or the missing key reads as a bug rather than a choice
+        body.appendChild(el("div", "sdlg-hint",
+          "No key in this one — the agent does not need it, so it never gets to "
+          + "log it or pass it on. You put the value in .env yourself."));
+        body.appendChild(cp);
+        wireCopy(cp, function () { return prompt; }, "Copy prompt");
+      }
+    };
+
+    // What they ticked at step two is what opens. The rest is one line away —
+    // filtered, not deleted, because a wrong tick should cost a click, not the
+    // whole artefact.
+    var want = wantedSections();
+    want.forEach(function (k) { SECTIONS[k](); });
+
+    var rest = SECTION_ORDER.filter(function (k) { return want.indexOf(k) < 0; });
+    if (rest.length) {
+      var more = el("button", "more", "Show the other ways in");
+      more.type = "button";
+      more.addEventListener("click", function () {
+        more.remove();
+        rest.forEach(function (k) { SECTIONS[k](); });
+      });
+      body.appendChild(more);
+    }
+
+    dlg.appendChild(body);
+
+    var x = el("button", "dlg-x", "\u00d7");
+    x.type = "button"; x.setAttribute("aria-label", "Close");
+    x.style.color = "var(--ink-3)";
+    dlg.appendChild(x);
+
+    ovl.appendChild(dlg);
+    document.body.appendChild(ovl);
+
+    function close() { ovl.remove(); document.removeEventListener("keydown", onKey); }
+    function onKey(e) { if (e.key === "Escape") close(); }
+    document.addEventListener("keydown", onKey);
+    x.addEventListener("click", close);
+    ovl.addEventListener("click", function (e) { if (e.target === ovl) close(); });
+  }
+
+  /* ---------------- claim dialog ---------------- */
+
+  var CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a7f52" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var STAR = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#00b67a"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>';
+  var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
+
+  function openClaim(onClaimed, onDismiss) {
+    var claimed = false;
+    var ovl = el("div", "ovl");
+    var dlg = el("div", "dlg");
+    dlg.style.position = "relative";
+
+    /* left — value pitch */
+    var L = el("div", "dlg-l");
+    var eb = el("div", "dlg-eyebrow");
+    eb.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z"/></svg>';
+    eb.appendChild(el("span", null, "Welcome bonus"));
+    L.appendChild(eb);
+
+    var h = el("h2");
+    h.appendChild(document.createTextNode("Claim "));
+    h.appendChild(el("b", null, "$10"));
+    h.appendChild(document.createTextNode(" in free credits"));
+    L.appendChild(h);
+
+    L.appendChild(el("p", "lede",
+      "Run a real evaluation before you commit budget. Credits land instantly, no invoice and no procurement."));
+
+    var ul = document.createElement("ul");
+    function li(boldText, rest, trailingBold) {
+      var n = document.createElement("li");
+      var ic = el("span"); ic.innerHTML = CHECK; n.appendChild(ic);
+      var sp = el("span");
+      if (boldText) sp.appendChild(el("b", null, boldText));
+      if (rest) sp.appendChild(document.createTextNode(rest));
+      if (trailingBold) sp.appendChild(el("b", null, trailingBold));
+      n.appendChild(sp);
+      ul.appendChild(n);
+    }
+    li("$10 on base models", " \u2014 DeepSeek, Kimi, Gemini Flash");
+    li("EvalLab", " \u2014 benchmark them on your own prompts");
+    li("Analytics", " \u2014 per-request cost and latency");
+    li("Prompt management", " and version history");
+    li("No auto-charge", " when the credits run out");
+    li(null, "Credits valid ", "7 days");
+    L.appendChild(ul);
+
+    L.appendChild(el("div", "cap", "Free credits run on"));
+    var row = el("div", "brandrow");
+    ["DeepSeek", "Kimi", "Gemini"].forEach(function (n) {
+      var t = el("div", "brandtile", n.charAt(0));
+      t.title = n;
+      row.appendChild(t);
+    });
+    L.appendChild(row);
+    L.appendChild(el("p", "unlock", "All 450+ models unlock when you top up."));
+
+    var trust = el("div", "trust");
+    var faces = el("div", "faces");
+    [["#3d33ff", "AK"], ["#1a7f52", "MR"], ["#c5292e", "JT"], ["#a8620c", "SL"]].forEach(function (f) {
+      var s2 = el("span", null, f[1]); s2.style.background = f[0]; faces.appendChild(s2);
+    });
+    trust.appendChild(faces);
+    var who = el("div");
+    var st = el("div", "stars");
+    st.innerHTML = STAR + STAR + STAR + STAR + STAR;
+    who.appendChild(st);
+    who.appendChild(el("div", "who", "Trusted by 20,000+ developers"));
+    trust.appendChild(who);
+    L.appendChild(trust);
+
+    /* right — verification */
+    var R = el("div", "dlg-r");
+    R.appendChild(el("h3", null, "Verify your card to claim"));
+
+    var safe = el("div", "safebox");
+    var lk = el("span"); lk.innerHTML = LOCK; lk.style.color = "var(--accent)"; lk.style.flex = "none"; lk.style.marginTop = "2px";
+    safe.appendChild(lk);
+    var sp = el("p");
+    sp.appendChild(el("b", null, "We will not charge your card automatically until your free credits run out."));
+    sp.appendChild(document.createTextNode(" Card required for verification only."));
+    safe.appendChild(sp);
+    R.appendChild(safe);
+
+    var cf = el("div", "cardfield");
+    cf.appendChild(el("label", null, "Card details"));
+    var fake = el("div", "fake");
+    fake.appendChild(el("span", null, "0000 0000 0000 0000"));
+    fake.appendChild(el("span", null, "MM / YY   CVC"));
+    cf.appendChild(fake);
+    cf.appendChild(el("div", "note", "Stripe element \u2014 inert in this prototype, it accepts nothing."));
+    R.appendChild(cf);
+
+    var btn = el("button", "claimbtn", "Verify & claim $10");
+    btn.type = "button";
+    R.appendChild(btn);
+
+    var foot = el("div", "dlg-foot");
+    var lk2 = el("span"); lk2.innerHTML = LOCK;
+    foot.appendChild(lk2);
+    foot.appendChild(el("span", null, "Secured by Stripe \u00b7 $0.00 charge, no subscription"));
+    R.appendChild(foot);
+
+    var x = el("button", "dlg-x", "\u00d7");
+    x.type = "button";
+    x.setAttribute("aria-label", "Close");
+
+    dlg.appendChild(L); dlg.appendChild(R); dlg.appendChild(x);
+    ovl.appendChild(dlg);
+    document.body.appendChild(ovl);
+
+    function close() {
+      ovl.remove();
+      document.removeEventListener("keydown", onKey);
+      if (!claimed && onDismiss) onDismiss();
+    }
+    function onKey(e) { if (e.key === "Escape") close(); }
+    document.addEventListener("keydown", onKey);
+    x.addEventListener("click", close);
+    ovl.addEventListener("click", function (e) { if (e.target === ovl) close(); });
+
+    btn.addEventListener("click", function () {
+      claimed = true;
+      btn.disabled = true;
+      btn.textContent = "Claiming\u2026";
+      setTimeout(function () { close(); onClaimed(); }, 900);
+    });
+  }
+
+  STEPS.credits = function () {
+    bot(function (b) {
+      b.appendChild(el("p", null, "One thing left. Right now that key answers with a 402."));
+    });
+    say("$10 free, after a quick card check. No charge \u2014 the card just proves you are one person and not a thousand, and nothing is taken when the credits run out.");
+    setChips([
+      { v: "yes", label: "Verify card — claim $10" },
+      { v: "later", label: "I'll top up later" }
+    ], false, null, function (it) {
+      me(it.label);
+      if (it.v === "yes") {
+        // The real dialog opens here — the same two-panel modal the app ships.
+        openClaim(function () {
+          S.credits = "$10.00";
+          renderFacts("credits");
+          bot(function (b) {
+            card(b, "jade", "$10.00, landed",
+              "Endpoint, key and model are all above. The only thing left is your first 200.");
+            if (S._model && ["deepseek", "kimi", "gemini"].indexOf(baseFamily(S._model)) < 0) {
+              card(b, "amber", "Free credits don\u2019t cover " + S.model,
+                "The welcome bonus runs on base models only \u2014 DeepSeek, Kimi and Gemini Flash. Your default needs a top-up, or switch it to a base model for now.");
+            }
+          });
+          finishSolo();
+        }, watchAfterDismiss);
+        return;
+      }
+      {
+        S.credits = "$0.00";
+        renderFacts("credits");
+        bot(function (b) {
+          card(b, "amber", "Key works, balance is $0",
+            "Every request comes back 402 until there are credits. The reminder lives on Get Started.");
+        });
+      }
+      finishSolo();
+    });
+    mode("confirm");
+    hint.textContent = "Nothing is charged today, or ever, without you clicking again.";
+    setSkip(function () {
+      me("Skipped");
+      S.credits = "$0.00";
+      renderFacts("credits");
+      bot(function (b) {
+        card(b, "amber", "Key works, balance is $0",
+          "Every request comes back 402 until there are credits. The reminder lives on Get Started.");
+      });
+      finishSolo();
+    }, "Not now");
+  };
+
+  /* ---------------- dead-end watch ---------------- */
+
+  // Opening the card check and closing it is the one place someone can end up
+  // with a key, no balance and nothing to press. Notice it, offer the exit,
+  // and let any action cancel — a timer that navigates on its own is hostile
+  // when the person has simply gone to fetch their card.
+  var idleT = null, tickT = null;
+
+  function cancelWatch() {
+    clearTimeout(idleT); clearInterval(tickT);
+    idleT = tickT = null;
+    var n = streamIn.querySelector(".closing");
+    if (n) n.remove();
+    document.removeEventListener("pointerdown", cancelWatch, true);
+    document.removeEventListener("keydown", cancelWatch, true);
+  }
+
+  function watchAfterDismiss() {
+    cancelWatch();
+    idleT = setTimeout(function () {
+      say("Card check closed. The key is still yours \u2014 it just has no balance yet.");
+      block(function () {
+        var box = el("div", "closing");
+        var left = 10;
+        var line = el("div", "closing-t", "Taking you to Get Started in " + left + "s.");
+        box.appendChild(line);
+        var row = el("div", "closing-row");
+        var go2 = el("button", "cp go", "Go now");
+        go2.type = "button";
+        var stay = el("button", "skiplink", "Stay here");
+        stay.type = "button";
+        row.appendChild(go2); row.appendChild(stay);
+        box.appendChild(row);
+
+        tickT = setInterval(function () {
+          left -= 1;
+          if (left <= 0) { clearInterval(tickT); leave(); return; }
+          line.textContent = "Taking you to Get Started in " + left + "s.";
+        }, 1000);
+
+        go2.addEventListener("click", function () { cancelWatch(); leave(); });
+        stay.addEventListener("click", function () { cancelWatch(); });
+
+        // anything at all counts as "still here"
+        setTimeout(function () {
+          document.addEventListener("pointerdown", cancelWatch, true);
+          document.addEventListener("keydown", cancelWatch, true);
+        }, 0);
+
+        return box;
+      }, 200);
+    }, 6000);
+  }
+
+  function leave() {
+    cancelWatch();
+    say("Get Started is where you top up, and where the key is waiting.");
+    setChips([], false); mode("none"); setSkip(null);
+    hint.textContent = "End of the solo branch.";
+  }
+
+  function finishSolo() {
+    setChips([], false); mode("none"); setSkip(null);
+    hint.textContent = "Solo branch complete — 4 questions and one action.";
+  }
+
+  /* --- org (distinct questions only) --- */
+
+  STEPS.orgPains = function () {
+    bot(function (b) { b.appendChild(el("p", null, "Which of these resonate with you?")); });
+    setChips(PAINS_ORG, true, null, null, true);
+    mode("both", "Something else keeping you up? Type it.");
+    hint.textContent = "Pick as many as apply, or type your own — each changes what I set up.";
+    setSkip(function () {
+      me("Skipped");
+      S.worry = "Not said";
+      renderFacts("worry");
+      bot(function (b) { card(b, null, "Defaults it is", "A project limit and a fallback chain go on anyway. They cost nothing and they are what everyone asks for by month two."); });
+      go("intro");
+    });
+    send.onclick = function () {
+      var labels = picked.map(function (p) { return p.label; });
+      me(labels.join(" · "));
+      S.worry = labels.length > 2 ? labels.length + " things" : labels.join(", ");
+      renderFacts("worry");
+      bot(function (b) {
+        picked.slice(0, 3).forEach(function (p) {
+          var w = {
+            spend:     ["amber", "Limits on org, project and key", "The tightest one wins, and an alert fires before it bites."],
+            modelpick: [null, "A starter set, picked for you", "Filtered to what your team actually needs \u2014 the full catalogue stays one click away."],
+            provider:  ["jade", "Fallback chain", "A second and a third model stand behind the first, inside your deadline."],
+            access:    [null, "Roles per project, not per org", "Access follows the project boundary, so a contractor on one thing never sees another."],
+            residency: [null, "Retention, ZDR and region controls", "Data stays where your policy says it stays, on every route we run."],
+            scratch:   ["jade", "A clean default stack", "One key, one fallback chain, sane limits \u2014 nothing to migrate, nothing to unwind."]
+          }[p.v];
+          if (w) card(b, w[0], w[1], w[2]);
+        });
+      });
+      go("intro");
+    };
+  };
+
+  STEPS.orgName = function () {
+    bot(function (b) { b.appendChild(el("p", null, "Name of your organization?")); });
+
+    var guessed = orgNameFromEmail(DEMO_EMAIL);
+    var nameOptions = [
+      { v: "domain",  label: guessed, sub: "Based on your email domain" },
+      { v: "default", label: "Default organization", sub: "You can rename it anytime" }
+    ];
+
+    function commitName(name) {
+      S.orgName = name;
+      renderFacts("orgName");
+      go("orgTeamSize");
+    }
+
+    setChips(nameOptions, false, null, function (it) {
+      me(it.label);
+      commitName(it.label);
+    }, false, 2);
+    typedAsChip = false;
+    mode("both", "Or type your own");
+    hint.textContent = "Pick one, or type your own and press Continue.";
+
+    // Typing is an answer too, so it clears whichever option was tapped \u2014
+    // last action wins, same rule the model and role steps use.
+    box.oninput = function () {
+      if (box.value.trim() && chipsEl) {
+        Array.prototype.forEach.call(chipsEl.children, function (x) {
+          x.setAttribute("aria-pressed", "false");
+        });
+        picked = [];
+      }
+      send.disabled = box.value.trim().length === 0 && picked.length === 0;
+    };
+
+    send.onclick = function () {
+      if (picked.length) { me(picked[0].label); commitName(picked[0].label); return; }
+      var text = box.value.trim();
+      if (!text) return;
+      me(text);
+      box.value = "";
+      commitName(text);
+    };
+
+    setSkip(function () {
+      me("Skipped");
+      commitName(S.building || "Your organization");
+    }, "Name it later");
+  };
+
+  STEPS.orgTeamSize = function () {
+    bot(function (b) { b.appendChild(el("p", null, "How big is your team?")); });
+
+    function commitTeamSize(label) {
+      S.teamSize = label;
+      renderFacts("teamSize");
+      go("orgPains");
+    }
+
+    setChips([
+      { v: "solo",  label: "Just me, for now" },
+      { v: "small", label: "2 \u2013 5 Members" },
+      { v: "mid",   label: "6 \u2013 20 Members" },
+      { v: "large", label: "21 \u2013 50 Members" },
+      { v: "xl",    label: "50+ Members" }
+    ], false, null, function (it) {
+      me(it.label);
+      commitTeamSize(it.label);
+    });
+    typedAsChip = false;
+    mode("both", "Or type it \u2014 e.g. \u201cabout 12 people\u201d");
+    hint.textContent = "Pick one, or type it and press Continue.";
+
+    // Typing is an answer too, so it clears whichever option was tapped \u2014
+    // last action wins, same rule the other steps use.
+    box.oninput = function () {
+      if (box.value.trim() && chipsEl) {
+        Array.prototype.forEach.call(chipsEl.children, function (x) {
+          x.setAttribute("aria-pressed", "false");
+        });
+        picked = [];
+      }
+      send.disabled = box.value.trim().length === 0 && picked.length === 0;
+    };
+
+    send.onclick = function () {
+      if (picked.length) { me(picked[0].label); commitTeamSize(picked[0].label); return; }
+      var text = box.value.trim();
+      if (!text) return;
+      me(text);
+      box.value = "";
+      commitTeamSize(text);
+    };
+
+    setSkip(function () {
+      me("Skipped");
+      commitTeamSize("Not said");
+    });
+  };
+
+  // Each closing line is a sentence plus an inline link — same voice as the
+  // rest of the chat, but the second half is the clickable action.
+  var CONFETTI_COLORS = ["#5b3df5", "#22c55e", "#f59e0b", "#ef4444", "#06b6d4", "#ec4899"];
+  function fireConfetti() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var layer = el("div", "confetti-layer");
+    var n = 46;
+    for (var i = 0; i < n; i++) {
+      var p = el("div", "confetti-piece");
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+      p.style.setProperty("--drift", Math.round(Math.random() * 160 - 80) + "px");
+      p.style.setProperty("--rot", (Math.round(Math.random() * 3 + 2) * 360) + "deg");
+      p.style.animationDuration = (2.1 + Math.random() * 1.1) + "s";
+      p.style.animationDelay = (Math.random() * 0.35) + "s";
+      layer.appendChild(p);
+    }
+    document.body.appendChild(layer);
+    setTimeout(function () { layer.remove(); }, 3600);
+  }
+
+  function closingLine(lead, actionLabel, dest) {
+    bot(function (b) {
+      var row = el("div", "closingline");
+      row.appendChild(document.createTextNode(lead + " "));
+      var lb = el("button", "linkbtn", actionLabel);
+      lb.type = "button";
+      lb.style.marginLeft = "0";
+      lb.dataset.dest = dest;
+      row.appendChild(lb);
+      b.appendChild(row);
+    });
+  }
+
+  STEPS.orgDone = function () {
+    S.budget = "$500 / month";
+    S.project = S.building || "first-project";
+    S.key = KEY;
+    renderFacts("project");
+    bot(function (b) {
+      fireConfetti();
+      b.appendChild(el("p", null, "Congrats \u2014 your organization is created. What do you want to do next?"));
+    });
+    closingLine("Continue working with the LLM API.", "Go to the Get Started page", "getstarted");
+    closingLine("Need more details first.", "Explore the Documentation", "docs");
+    closingLine("Ready to start building.", "Create your API key", "apikeys");
+    setChips([], false); mode("none"); setSkip(null);
+    hint.textContent = "Org branch complete — 5 questions to a standing organization.";
+  };
+
+
+  /* ---------------- hero mosaic ---------------- */
+
+  var cellsEl = document.getElementById("cells");
+
+  // Banner mosaic: a shallow band of translucent tiles across the top, with a
+  // few running down each edge so it frames the page instead of ending on a
+  // line. Colours sampled off the reference — blue, through near-white, to
+  // orchid and pink.
+  var CELL = 76;
+  var STOPS = [[92,138,217],[191,203,238],[227,226,244],[199,130,218],[232,160,203]];
+  var MARK = [168, 85, 216];
+  var FADE = 0.28, SIDE = 0.15, ALPHA = 0.78, DROPOUT = 0.46, SPARKLE = 0.12, MOVES = 0.45;
+
+  function mix(t) {
+    var n = STOPS.length - 1;
+    var x = Math.max(0, Math.min(0.999999, t)) * n;
+    var i = Math.floor(x), k = x - i;
+    var a = STOPS[i], b = STOPS[i + 1];
+    return [0, 1, 2].map(function (j) { return a[j] + (b[j] - a[j]) * k; });
+  }
+  function rgb(c, lift, jitter, a) {
+    var p = c.map(function (v) { return Math.max(0, Math.min(255, Math.round(v + lift + jitter))); });
+    return a === undefined || a >= 1 ? "rgb(" + p.join(",") + ")"
+                                     : "rgba(" + p.join(",") + "," + a.toFixed(3) + ")";
+  }
+
+  function paintCells() {
+    var w = window.innerWidth, h = window.innerHeight;
+    var cols = Math.ceil(w / CELL), rows = Math.ceil(h / CELL);
+    cellsEl.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+    cellsEl.style.gridTemplateRows = "repeat(" + rows + ", 1fr)";
+    var frag = document.createDocumentFragment();
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var d = document.createElement("div");
+        d.className = "cell";
+
+        var depth = rows > 1 ? r / (rows - 1) : 0;
+        var cx = cols > 1 ? c / (cols - 1) : 0.5;
+        var edge = Math.min(cx, 1 - cx);
+        var fy = Math.max(0, 1 - depth / FADE);
+        var fx = Math.max(0, 1 - edge / SIDE) * Math.max(0, 1 - depth * 0.9);
+        var f = Math.max(fy * fy, fx * fx * 0.8);
+
+        if (f <= 0.02 || Math.random() >= 1 - DROPOUT * (1 - f * 0.5)) {
+          d.style.background = "transparent";
+          d.classList.add("still");
+          frag.appendChild(d);
+          continue;
+        }
+
+        var base = mix(cx * 0.78 + depth * 0.22);
+        var j = (Math.random() - 0.5) * 10;
+        // a few tiles nearly solid, most ghosted — that unevenness is the look
+        var a = Math.min(1, ALPHA * (0.45 + 0.55 * f) * (0.5 + Math.random() * 0.78));
+        d.style.setProperty("--c1", rgb(base, 0, j, a));
+        d.style.setProperty("--c2", rgb(base, 20, j, a));
+        if (Math.random() > MOVES) d.classList.add("still");
+        else d.style.setProperty("--dl", (-Math.random() * 10.5).toFixed(2) + "s");
+
+        if (Math.random() < SPARKLE * f) {
+          var m = document.createElement("i");
+          m.style.background = rgb(MARK, 0, 0, Math.min(1, a + 0.42));
+          d.appendChild(m);
+        }
+        frag.appendChild(d);
+      }
+    }
+    cellsEl.textContent = "";
+    cellsEl.appendChild(frag);
+  }
+
+  paintCells();
+  var rs;
+  window.addEventListener("resize", function () {
+    clearTimeout(rs);
+    rs = setTimeout(function () { if (!hero.hidden) paintCells(); }, 200);
+  });
+
+  /* ---------------- wiring ---------------- */
+
+  document.getElementById("brandmark").innerHTML = LOGO;
+
+  skipBtn.addEventListener("click", function () { if (stepSkip) stepSkip(); });
+
+  // On a single-answer step the box IS the answer, so Continue follows it.
+  box.addEventListener("input", function () {
+    if (!typedAsChip) send.disabled = box.value.trim().length === 0 && picked.length === 0;
+  });
+
+  box.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    e.preventDefault();
+    if (typedAsChip) {
+      var t = box.value.trim();
+      if (t) { addTyped(t); box.value = ""; }
+    } else if (!inputrow.hidden) {
+      send.click();
+    }
+  });
+
+  // Registered before any step assigns send.onclick, so a half-typed answer is
+  // absorbed rather than lost when they press Continue.
+  send.addEventListener("click", function () {
+    if (!typedAsChip) return;       // some steps read the box themselves
+    var t = box.value.trim();
+    if (!box.hidden && t) { addTyped(t); box.value = ""; }
+  });
+
+  // The cards select; Continue commits. One more click, but the choice stays
+  // reversible while they are still reading the second card.
+  var picks = Array.prototype.slice.call(document.querySelectorAll(".pick"));
+  var heroGo = document.getElementById("heroGo");
+  var chosen = null;
+
+  function choose(elp, focus) {
+    chosen = elp;
+    picks.forEach(function (x) {
+      var on = x === elp;
+      x.setAttribute("aria-checked", on ? "true" : "false");
+      x.tabIndex = on ? 0 : -1;   // one tab stop for the group, as a radiogroup should have
+    });
+    if (focus) elp.focus();
+    heroGo.disabled = false;
+  }
+  picks.forEach(function (elp, i) {
+    elp.setAttribute("aria-checked", "false");
+    elp.addEventListener("click", function () { choose(elp); });
+    elp.addEventListener("dblclick", function () { choose(elp); heroGo.click(); });
+    elp.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
+            : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      choose(picks[(i + d + picks.length) % picks.length], true);
+    });
+  });
+  heroGo.disabled = true;
+
+  heroGo.addEventListener("click", function () {
+    if (!chosen) return;
+    openChat(chosen.dataset.label,
+      { mode: chosen.dataset.mode, modeLabel: chosen.dataset.label, modalities: ["chat"], routes: [] }, null);
+  });
+
+
+
+
+  function resetHero() {
+    chosen = null;
+    picks.forEach(function (x) {
+      x.setAttribute("aria-checked", "false");
+      x.tabIndex = -1;
+    });
+    if (picks[0]) picks[0].tabIndex = 0;
+    heroGo.disabled = true;
+  }
+
+  document.getElementById("heroSkip").addEventListener("click", function () {
+    openChat(null, { mode: "solo", modalities: ["chat"], routes: [] }, null);
+    setTimeout(handOverKey, 420);
+  });
+
+  function handOverKey() {
+    queue.length = 0;
+    streamIn.textContent = "";
+    setChips([], false); mode("none"); setSkip(null);
+    S = { branch: "solo", mode: "Just me", key: KEY, ceiling: "$5 / 1M output", model: "gpt-5-nano", credits: "$0.00" };
+    renderFacts("key");
+    bot(function (b) {
+      b.appendChild(el("p", null, "Fair enough. Here it is."));
+      var creds = el("div", "creds");
+      credRow(creds, "Endpoint", ENDPOINT, false);
+      credRow(creds, "API key", KEY, true);
+      credRow(creds, "Model", "gpt-5-nano", false);
+      b.appendChild(creds);
+      b.appendChild(el("p", "sub", "Default project, a $5 price ceiling, a $50 monthly cap. Skipping the conversation never skips the guardrails — a key with none of them is exactly how a surprise bill starts."));
+    });
+    hint.textContent = "";
+  }
+
+  document.getElementById("skip").addEventListener("click", handOverKey);
+
+  function resetAll() {
+    streamIn.textContent = ""; S = {}; picked = [];
+    queue.length = 0; playing = false; composer.classList.remove("busy");
+    send.onclick = null;
+    app.hidden = true;
+    hero.hidden = false;
+    requestAnimationFrame(function () { hero.classList.remove("out"); });
+    resetHero();
+    renderFacts();
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("restart").addEventListener("click", resetAll);
+  // Same exit as "Start over", just always reachable from the corner.
+  document.getElementById("closeOnboarding").addEventListener("click", resetAll);
+
+  renderFacts();
+})();
+
+</script>
+
+</body></html>
