@@ -13,7 +13,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const c = getCase((await params).slug);
-  return c ? { title: `${c.title} — Anastasiia Aleksiichuk, Product Owner`, description: c.lede } : {};
+  return c ? { title: `${c.title} — Anastasiia Aleksiichuk, Product Manager`, description: c.lede } : {};
 }
 
 /** **bold** and [placeholder] inside case copy. */

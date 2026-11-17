@@ -82,11 +82,11 @@ export const CASES: Case[] = [
     lede: "Textbooks teach “I don’t know”. Real people say “I dunno”. Gotta is my own product: a catalog of everyday phrases that shows how English really sounds — first in a song, then in live speech.",
     tags: ["Own product", "EdTech", "0-to-1"],
     cover: "/cases/gotta-phone-cover.jpg",
-    meta: [["Product", "Gotta"], ["Role", "Founder · Product Owner"], ["Timeline", "Oct 2026 · live"], ["Team", "Solo + Claude Code"]],
+    meta: [["Product", "Gotta"], ["Role", "Founder · Product Manager"], ["Timeline", "Oct 2026 · live"], ["Team", "Solo + Claude Code"]],
     link: { label: "gottaenglish.com", href: "https://gottaenglish.com" },
     summary: {
       problem: "Learners understand English on paper and almost nothing in real speech.",
-      role: "Founder and PO — the problem, the scope, the build and the launch.",
+      role: "Founder and PM — the problem, the scope, the build and the launch.",
       decision: "An MVP scoped strictly from the job to be done; retention features left for later.",
       outcome: { value: "1 week", label: "from the idea to a live product" },
     },
@@ -96,7 +96,7 @@ export const CASES: Case[] = [
       { list: ["**Emotional:** stop feeling lost when people talk fast", "**Social:** sound natural, not like a textbook, at work and in conversation"] },
     ],
     role: [
-      { p: "Founder and Product Owner. I defined the problem and the job, cut the scope, built the product with Claude Code (Next.js, Supabase, Vercel) and launched it." },
+      { p: "Founder and Product Manager. I defined the problem and the job, cut the scope, built the product with Claude Code (Next.js, Supabase, Vercel) and launched it." },
       { list: ["**Legal by design:** videos are never downloaded or stored — only YouTube IDs and timecodes, through the official embed", "**Ready for launch:** SEO, privacy and terms pages, and analytics before day one", "**Easy to grow:** an admin panel with CSV import from Notion, so adding phrases doesn’t need code"], title: "Constraints I designed around" },
     ],
     decision: [
@@ -136,7 +136,7 @@ export const CASES: Case[] = [
     lede: "Carma connects auto-parts distributors with workshops and service centres across the GCC. I was the only designer from zero to launch — and grew into owning the roadmap.",
     tags: ["B2B marketplace", "0-to-1", "Roadmap", "Backlog"],
     cover: "/cases/carma-1.jpg",
-    meta: [["Product", "carma.team · GCC"], ["Role", "Product Designer → acting PO"], ["Timeline", "Jun 2024 — Jun 2026"], ["Team", "PO, BA, AI team, PM, developers"]],
+    meta: [["Product", "carma.team · GCC"], ["Role", "Product Designer → acting Product Manager"], ["Timeline", "Jun 2024 — Jun 2026"], ["Team", "PO, BA, AI team, PM, developers"]],
     summary: {
       problem: "A dense domain — OEM catalogs, VIN search, pricing, many roles — and no product yet.",
       role: "The only designer from zero to launch; owned the roadmap and OKRs with the PO and BA.",
@@ -148,7 +148,7 @@ export const CASES: Case[] = [
       { list: ["**Buyers** need the right part, fast, at the best price and lead time", "**Suppliers** need to keep catalogs, price lists and stock up to date at scale", "**Admins** need to verify companies and keep the marketplace trustworthy"], title: "Three roles, three jobs" },
     ],
     role: [
-      { p: "I was the only designer on Carma through the whole project, with a junior designer joining at times. I started in UX/UI and grew into an acting Product Owner role." },
+      { p: "I was the only designer on Carma through the whole project, with a junior designer joining at times. I started in UX/UI and grew into an acting Product Manager role." },
       { list: ["Owned the **roadmap** and set **OKRs**; prioritised the backlog with the PO and BA", "Mapped every role’s workflows — buyer, supplier, admin — with **User Story Mapping**", "Ran **discovery**: competitive analysis and interviews with workshops and suppliers", "Turned business logic into workflows with the AI team and developers", "Ran **usability tests** on selected features"] },
     ],
     decision: [

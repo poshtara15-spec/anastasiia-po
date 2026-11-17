@@ -31,7 +31,7 @@ export function Footer() {
   return (
     <footer className="foot">
       <div className="wrap">
-        <span>© 2026 Anastasiia Aleksiichuk · Product Owner</span>
+        <span>© 2026 Anastasiia Aleksiichuk · Product Manager</span>
         <span>Built with Claude Code</span>
       </div>
     </footer>

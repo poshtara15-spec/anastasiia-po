@@ -14,8 +14,8 @@ export const LINKS = {
 export const HERO = {
   hello: "Hello, I’m Anastasiia",
   location: "Brussels, Belgium · Remote",
-  title: "Product Owner for B2B SaaS & E-commerce",
-  thesis: "I’m a Product Owner with a designer’s hands.",
+  title: "Product Manager for B2B SaaS & E-commerce",
+  thesis: "I’m a Product Manager with a designer’s hands.",
   lede: "I set the roadmap and OKRs, prioritise the work — and turn ideas into working prototypes fast, so we test them before they’re built.",
   currently: "building Gotta, my own EdTech product. Background in product design and sales; AI is part of my everyday workflow.",
 };
@@ -89,7 +89,7 @@ export type Job = { dates: string; role: string; org: string; meta: string; intr
 
 export const JOURNEY: Job[] = [
   {
-    dates: "Oct 2026 — Present", role: "Founder & Product Owner", org: "Gotta", meta: "Own product · Remote",
+    dates: "Oct 2026 — Present", role: "Founder & Product Manager", org: "Gotta", meta: "Own product · Remote",
     intro: "A catalog of everyday English phrases that shows how they really sound — in songs and live speech.",
     points: [
       "Defined the problem and the job to be done for learners of spoken English.",
@@ -109,7 +109,7 @@ export const JOURNEY: Job[] = [
     tags: ["Activation", "Monetisation", "AARRR", "Cohort analysis"],
   },
   {
-    dates: "Jun 2024 — Jun 2026", role: "Product Designer → acting Product Owner", org: "Carma", meta: "B2B marketplace · GCC · Remote",
+    dates: "Jun 2024 — Jun 2026", role: "Product Designer → acting Product Manager", org: "Carma", meta: "B2B marketplace · GCC · Remote",
     intro: "A marketplace connecting auto-parts distributors with workshops. The only designer from zero to launch.",
     points: [
       "Owned the roadmap and set OKRs; prioritised the backlog with the PO and BA.",

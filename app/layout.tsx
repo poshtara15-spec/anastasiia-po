@@ -5,8 +5,8 @@ import "./globals.css";
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "Anastasiia Aleksiichuk — Product Owner",
-  description: "Product Owner for B2B SaaS and e-commerce: roadmap, OKRs and backlog — with a designer’s hands to prototype ideas before the team builds them.",
+  title: "Anastasiia Aleksiichuk — Product Manager",
+  description: "Product Manager for B2B SaaS and e-commerce: roadmap, OKRs and backlog — with a designer’s hands to prototype ideas before the team builds them.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#f6f5f0" };

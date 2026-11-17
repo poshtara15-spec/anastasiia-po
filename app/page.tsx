@@ -14,7 +14,7 @@ export default function Home() {
             <span>{HERO.hello} · {HERO.location}</span>
             <span className="dot">available for new projects</span>
           </div>
-          <h1>Product Owner for <mark>B2B SaaS</mark> &amp; E‑commerce</h1>
+          <h1>Product Manager for <mark>B2B SaaS</mark> &amp; E‑commerce</h1>
           <div className="hero-row">
             <div>
               <p className="thesis">{HERO.thesis}</p>
@@ -156,7 +156,7 @@ export default function Home() {
         <section className="section wrap contact" id="contact">
           <Label>say hello</Label>
           <h2>Let’s build something people <mark>pay for</mark></h2>
-          <p className="lead">Open to Product Owner roles in B2B SaaS and e-commerce. The fastest way to reach me is Telegram.</p>
+          <p className="lead">Open to Product Manager roles in B2B SaaS and e-commerce. The fastest way to reach me is Telegram.</p>
           <div className="socials">
             <a className="btn solid" href={LINKS.telegram} target="_blank" rel="noopener">Telegram <span className="arr">↗</span></a>
             <a className="btn" href={`mailto:${LINKS.email}`}>{LINKS.email}</a>
